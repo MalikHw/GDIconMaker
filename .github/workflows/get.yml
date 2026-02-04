@@ -35,10 +35,12 @@ jobs:
           lftp -c "
             set ftp:ssl-allow no;
             set ftp:passive-mode on;
+            set net:max-retries 2;
+            set net:timeout 10;
             open -u $FTP_USER,$FTP_PASS -p $FTP_PORT $FTP_HOST;
-            mirror --verbose --exclude downloads/ --exclude temp_* --exclude .git/ --exclude .github/ . ./synced;
+            mirror --verbose --exclude downloads/ --exclude temp_* --exclude .git/ --exclude .github/ --exclude stats.json --continue --ignore-time htdocs ./synced;
             bye
-          "
+          " || true
       
       - name: Copy synced files to repository root
         run: |
