@@ -284,7 +284,28 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (d.success) updateStatsDisplay(d.stats);
                     });
                 
-                showDonationModal(data.downloadUrl, data.filename, data.message);
+                // START DOWNLOAD IMMEDIATELY
+                const link = document.createElement('a');
+                link.href = data.downloadUrl;
+                link.download = data.filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Show success message
+                result.className = 'result success';
+                result.innerHTML = `
+                    <h3>✓ Success!</h3>
+                    <p>${data.message}</p>
+                    <p style="font-size: 14px; color: #666; margin-top: 10px;">
+                        <i class="nf nf-fa-download"></i> Download started! File will be deleted after download completes.
+                    </p>
+                `;
+                
+                // THEN show donation popup
+                setTimeout(() => {
+                    showDonationModal();
+                }, 500);
             } else {
                 result.className = 'result error';
                 result.innerHTML = `
@@ -305,8 +326,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Custom donation modal with auto-delete
-    function showDonationModal(downloadUrl, filename, message) {
+    // Donation modal - shows AFTER download starts
+    function showDonationModal() {
         const modalOverlay = document.createElement('div');
         modalOverlay.className = 'modal-overlay';
         
@@ -315,24 +336,24 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.innerHTML = `
             <div class="modal-content">
                 <div class="modal-header">
-                    <i class="nf nf-fa-check_circle" style="color: #28a745; font-size: 48px;"></i>
-                    <h2>🎉 Your Icon Pack is Ready!</h2>
+                    <i class="nf nf-fa-heart" style="color: #e74c3c; font-size: 48px;"></i>
+                    <h2>💝 Enjoying the Tool?</h2>
                 </div>
                 <div class="modal-body">
                     <p style="font-size: 16px; color: #666; margin-bottom: 20px;">
-                        💝 This tool is <strong>100% free</strong>, but if you found it helpful, 
-                        please consider supporting the developer!
+                        This tool is <strong>100% free</strong> and always will be! 
+                        If you found it helpful, please consider supporting the developer!
                     </p>
                     <div class="modal-buttons">
-                        <a href="https://malikhw.github.io/donate" target="_blank" class="modal-btn donate-btn">
-                            <i class="nf nf-fa-heart"></i> Support the Developer
+                        <a href="https://malikhw.github.io/donate" target="_blank" class="modal-btn donate-btn" onclick="window.donationModalClose()">
+                            <i class="nf nf-fa-heart"></i> Donate ❤️
                         </a>
-                        <button type="button" class="modal-btn download-btn" id="justDownload">
-                            <i class="nf nf-fa-download"></i> Just Download
+                        <button type="button" class="modal-btn close-btn" id="closeDonation">
+                            <i class="nf nf-fa-times"></i> Close
                         </button>
                     </div>
                     <p style="font-size: 12px; color: #999; margin-top: 15px;">
-                        Your download will start automatically when you click either button
+                        No pressure! Your download has already started 😊
                     </p>
                 </div>
             </div>
@@ -343,37 +364,84 @@ document.addEventListener('DOMContentLoaded', function() {
         
         setTimeout(() => modalOverlay.classList.add('active'), 10);
         
-        function handleDownload() {
-            const link = document.createElement('a');
-            link.href = downloadUrl;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            // Auto-delete the ZIP file after download
-            fetch('delete.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ file: downloadUrl })
-            });
-            
+        // Close button and donation button both close modal
+        window.donationModalClose = function() {
+            closeDonationAndShowShare();
+        };
+        
+        document.getElementById('closeDonation').addEventListener('click', closeDonationAndShowShare);
+        
+        function closeDonationAndShowShare() {
             modalOverlay.classList.remove('active');
             setTimeout(() => {
                 document.body.removeChild(modalOverlay);
-                
-                result.className = 'result success';
-                result.innerHTML = `
-                    <h3>✓ Success!</h3>
-                    <p>${message}</p>
-                    <p style="font-size: 14px; color: #666; margin-top: 10px;">
-                        <i class="nf nf-fa-info_circle"></i> File has been auto-deleted from server for your privacy
-                    </p>
-                `;
+                // Show share popup after donation modal closes
+                showSharePopup();
             }, 300);
         }
+    }
+
+    // Share popup
+    function showSharePopup() {
+        const shareText = document.querySelector('meta[name="share-text"]').content;
         
-        modal.querySelector('.donate-btn').addEventListener('click', handleDownload);
-        document.getElementById('justDownload').addEventListener('click', handleDownload);
+        const shareOverlay = document.createElement('div');
+        shareOverlay.className = 'modal-overlay';
+        
+        const shareModal = document.createElement('div');
+        shareModal.className = 'modal';
+        shareModal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="nf nf-fa-share_alt" style="color: #667eea; font-size: 48px;"></i>
+                    <h2>📢 Help Spread the Word!</h2>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size: 15px; color: #666; margin-bottom: 15px;">
+                        Love the tool? Share it with others! Copy this text:
+                    </p>
+                    <div class="share-text-box">
+                        <textarea id="shareTextArea" readonly>${shareText}</textarea>
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="button" class="modal-btn copy-btn" id="copyShareText">
+                            <i class="nf nf-fa-copy"></i> Copy Text
+                        </button>
+                        <button type="button" class="modal-btn close-btn" id="closeShare">
+                            <i class="nf nf-fa-times"></i> Close
+                        </button>
+                    </div>
+                    <p style="font-size: 12px; color: #999; margin-top: 15px;">
+                        Post it on Reddit, Discord, Twitter, anywhere! Every share helps 🙏
+                    </p>
+                </div>
+            </div>
+        `;
+        
+        shareOverlay.appendChild(shareModal);
+        document.body.appendChild(shareOverlay);
+        
+        setTimeout(() => shareOverlay.classList.add('active'), 10);
+        
+        // Copy button
+        document.getElementById('copyShareText').addEventListener('click', function() {
+            const textarea = document.getElementById('shareTextArea');
+            textarea.select();
+            document.execCommand('copy');
+            
+            this.innerHTML = '<i class="nf nf-fa-check"></i> Copied!';
+            this.style.background = '#28a745';
+            
+            setTimeout(() => {
+                this.innerHTML = '<i class="nf nf-fa-copy"></i> Copy Text';
+                this.style.background = '';
+            }, 2000);
+        });
+        
+        // Close button
+        document.getElementById('closeShare').addEventListener('click', function() {
+            shareOverlay.classList.remove('active');
+            setTimeout(() => document.body.removeChild(shareOverlay), 300);
+        });
     }
 });

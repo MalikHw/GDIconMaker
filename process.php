@@ -190,7 +190,9 @@ try {
     array_map('unlink', glob($tempDir . '/*'));
     rmdir($tempDir);
 
-    sendSuccess("Icon pack created successfully with $fileCount icon(s)!", $zipPath, $zipFilename);
+    // Return download.php URL instead of direct file path
+    $downloadUrl = 'download.php?file=' . urlencode($zipFilename);
+    sendSuccess("Icon pack created successfully with $fileCount icon(s)!", $downloadUrl, $zipFilename);
 
 } catch (Exception $e) {
     if (isset($iconsDir) && is_dir($iconsDir)) {

@@ -600,6 +600,48 @@ input[type="file"] {
     box-shadow: 0 10px 25px rgba(40, 167, 69, 0.4);
 }
 
+.modal-btn.copy-btn {
+    background: #667eea;
+    color: white;
+}
+
+.modal-btn.copy-btn:hover {
+    background: #764ba2;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+.modal-btn.close-btn {
+    background: #6c757d;
+    color: white;
+}
+
+.modal-btn.close-btn:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(108, 117, 125, 0.4);
+}
+
+.share-text-box {
+    background: #f8f9ff;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.share-text-box textarea {
+    width: 100%;
+    min-height: 120px;
+    border: none;
+    background: transparent;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    color: #333;
+    resize: vertical;
+    outline: none;
+}
+
 @media (max-width: 600px) {
     .modal-content {
         padding: 25px;
