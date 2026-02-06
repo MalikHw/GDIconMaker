@@ -1,447 +1,483 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('iconForm');
-    const fileInput = document.getElementById('iconImage');
-    const imagePreview = document.getElementById('imagePreview');
-    const cropContainer = document.getElementById('cropContainer');
-    const cropCanvas = document.getElementById('cropCanvas');
-    const ctx = cropCanvas.getContext('2d');
-    const submitBtn = document.getElementById('submitBtn');
-    const result = document.getElementById('result');
+    const frm = document.getElementById('iconForm');
+    const fileIn = document.getElementById('iconImage');
+    const imgPrev = document.getElementById('imagePreview');
+    const cropBox = document.getElementById('cropContainer');
+    const cropCanv = document.getElementById('cropCanvas');
+    const ctx = cropCanv.getContext('2d');
+    const submitBt = document.getElementById('submitBtn');
+    const rslt = document.getElementById('result');
+    const dropZone = document.getElementById('dropZone');
+    const prevBox = document.getElementById('previewBox');
+    const prevCanv = document.getElementById('previewCanvas');
+    const prevCtx = prevCanv.getContext('2d');
     
-    let processedImages = []; // Array to store all processed images
-    let currentCropIndex = -1;
-    let cropRect = { x: 0, y: 0, size: 0 };
-    let isDragging = false;
-    let dragStart = { x: 0, y: 0 };
+    let procsdImgs = [];
+    let currCropIdx = -1;
+    let cropRct = { x: 0, y: 0, size: 0 };
+    let isDrag = false;
+    let dragStrt = { x: 0, y: 0 };
 
-    // Tutorial dropdown toggle
-    const tutorialToggle = document.getElementById('tutorialToggle');
-    const tutorialContent = document.getElementById('tutorialContent');
-    
-    tutorialToggle.addEventListener('click', function() {
-        tutorialToggle.classList.toggle('active');
-        tutorialContent.classList.toggle('active');
+    document.getElementById('tutorialToggle').addEventListener('click', function() {
+        this.classList.toggle('active');
+        document.getElementById('tutorialContent').classList.toggle('active');
     });
 
-    // Load and display stats
-    loadStats();
+    loadStts();
     
-    // Increment visit counter on page load
     fetch('stats.php?action=visit')
         .then(r => r.json())
-        .then(data => {
-            if (data.success) updateStatsDisplay(data.stats);
+        .then(d => {
+            if (d.success) updtStts(d.stats);
         })
-        .catch(e => console.log('Stats error:', e));
+        .catch(e => console.log('stats err:', e));
 
-    function loadStats() {
+    function loadStts() {
         fetch('stats.php?action=get')
             .then(r => r.json())
-            .then(data => {
-                if (data.success) updateStatsDisplay(data.stats);
+            .then(d => {
+                if (d.success) updtStts(d.stats);
             })
-            .catch(e => console.log('Stats error:', e));
+            .catch(e => console.log('stats err:', e));
     }
 
-    function updateStatsDisplay(stats) {
-        document.getElementById('totalVisits').textContent = stats.total_visits.toLocaleString();
-        document.getElementById('totalIcons').textContent = stats.total_icons.toLocaleString();
+    function updtStts(stts) {
+        document.getElementById('totalVisits').textContent = stts.total_visits.toLocaleString();
+        document.getElementById('totalIcons').textContent = stts.total_icons.toLocaleString();
     }
 
-    // Multi-image file selection
-    fileInput.addEventListener('change', function(e) {
-        const files = Array.from(e.target.files);
-        
-        if (files.length > 99) {
-            alert('Maximum 99 images allowed!');
-            fileInput.value = '';
-            return;
-        }
-
-        processedImages = [];
-        imagePreview.innerHTML = '';
-        currentCropIndex = 0;
-        
-        processNextImage(files);
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
     });
 
-    function processNextImage(files) {
-        if (currentCropIndex >= files.length) {
-            // All images processed
-            displayAllPreviews();
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const fls = e.dataTransfer.files;
+        if (fls.length > 0) {
+            fileIn.files = fls;
+            fileIn.dispatchEvent(new Event('change'));
+        }
+    });
+
+    fileIn.addEventListener('change', function(e) {
+        const fls = Array.from(e.target.files);
+        
+        if (fls.length > 99) {
+            alert('max 99 pics bro');
+            fileIn.value = '';
+            return;
+        }
+        
+        if (fls.length > 5) {
+            rslt.className = 'result warning';
+            rslt.innerHTML = '<p>⚠️ yo thats a lot of pics, might take a sec...</p>';
+        }
+
+        procsdImgs = [];
+        imgPrev.innerHTML = '';
+        prevBox.style.display = 'none';
+        currCropIdx = 0;
+        
+        procNextImg(fls);
+    });
+
+    function procNextImg(fls) {
+        if (currCropIdx >= fls.length) {
+            dispAllPrevs();
             return;
         }
 
-        const file = files[currentCropIndex];
-        const reader = new FileReader();
+        const fl = fls[currCropIdx];
+        const rdr = new FileReader();
         
-        reader.onload = function(event) {
-            const img = new Image();
-            img.onload = function() {
-                // Warn if image is small
-                if (img.width < 108 || img.height < 108) {
-                    result.className = 'result warning';
-                    result.innerHTML = `
-                        <p>⚠️ Warning: Image ${currentCropIndex + 1} is ${img.width}x${img.height}px. Quality will be shit! Recommended minimum: 108x108px</p>
-                    `;
+        rdr.onload = function(evt) {
+            const im = new Image();
+            im.onload = function() {
+                if (im.width < 108 || im.height < 108) {
+                    rslt.className = 'result warning';
+                    rslt.innerHTML = `<p>⚠️ pic ${currCropIdx + 1} is ${im.width}x${im.height}px, quality gonna be shit lol</p>`;
                 }
 
-                // Check if image is square
-                if (img.width !== img.height) {
-                    // Show crop UI
-                    showCropUI(img, event.target.result, files);
+                if (im.width !== im.height) {
+                    showCropUI(im, evt.target.result, fls);
                 } else {
-                    // Square image, add to processed array
-                    processedImages.push({
-                        data: event.target.result,
-                        filename: file.name
+                    procsdImgs.push({
+                        data: evt.target.result,
+                        filename: fl.name
                     });
-                    currentCropIndex++;
-                    processNextImage(files);
+                    currCropIdx++;
+                    procNextImg(fls);
                 }
             };
-            img.src = event.target.result;
+            im.src = evt.target.result;
         };
-        reader.readAsDataURL(file);
+        rdr.readAsDataURL(fl);
     }
 
-    function displayAllPreviews() {
-        imagePreview.innerHTML = '';
-        processedImages.forEach((img, index) => {
-            const previewItem = document.createElement('div');
-            previewItem.className = 'preview-item';
-            previewItem.innerHTML = `
-                <img src="${img.data}" alt="Icon ${index + 1}">
-                <div class="remove-image" data-index="${index}">×</div>
-                <p style="font-size: 11px; margin-top: 5px; color: #666;">Icon ${index + 1}</p>
+    function dispAllPrevs() {
+        imgPrev.innerHTML = '';
+        procsdImgs.forEach((im, idx) => {
+            const prvItem = document.createElement('div');
+            prvItem.className = 'preview-item';
+            prvItem.innerHTML = `
+                <img src="${im.data}" alt="Icon ${idx + 1}">
+                <div class="remove-image" data-index="${idx}">×</div>
+                <p style="font-size: 11px; margin-top: 5px; color: #666;">icon ${idx + 1}</p>
             `;
-            imagePreview.appendChild(previewItem);
+            imgPrev.appendChild(prvItem);
         });
 
-        // Add remove functionality
         document.querySelectorAll('.remove-image').forEach(btn => {
             btn.addEventListener('click', function() {
-                const index = parseInt(this.dataset.index);
-                processedImages.splice(index, 1);
-                displayAllPreviews();
+                const idx = parseInt(this.dataset.index);
+                procsdImgs.splice(idx, 1);
+                dispAllPrevs();
                 
-                if (processedImages.length === 0) {
-                    fileInput.value = '';
+                if (procsdImgs.length === 0) {
+                    fileIn.value = '';
+                    prevBox.style.display = 'none';
                 }
             });
         });
 
-        cropContainer.style.display = 'none';
+        cropBox.style.display = 'none';
+        
+        if (procsdImgs.length > 0) {
+            genPreview(procsdImgs[0].data);
+        }
     }
 
-    function showCropUI(img, imageSrc, files) {
-        cropContainer.style.display = 'block';
+    async function genPreview(imgData) {
+        try {
+            const formData = new FormData();
+            const blob = await (await fetch(imgData)).blob();
+            formData.append('previewOnly', 'true');
+            formData.append('iconImages[]', blob, 'preview.png');
+
+            const resp = await fetch('preview.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await resp.json();
+            
+            if (data.success) {
+                const prvImg = new Image();
+                prvImg.onload = function() {
+                    prevCanv.width = 119;
+                    prevCanv.height = 119;
+                    prevCtx.drawImage(prvImg, 31, 2, 119, 119, 0, 0, 119, 119);
+                    prevBox.style.display = 'block';
+                };
+                prvImg.src = 'data:image/png;base64,' + data.preview;
+            }
+        } catch(err) {
+            console.log('preview failed:', err);
+        }
+    }
+
+    function showCropUI(im, imgSrc, fls) {
+        cropBox.style.display = 'block';
         
-        const maxSize = 500;
-        let scale = 1;
-        if (img.width > maxSize || img.height > maxSize) {
-            scale = maxSize / Math.max(img.width, img.height);
+        const maxSz = 500;
+        let scl = 1;
+        if (im.width > maxSz || im.height > maxSz) {
+            scl = maxSz / Math.max(im.width, im.height);
         }
         
-        cropCanvas.width = img.width * scale;
-        cropCanvas.height = img.height * scale;
+        cropCanv.width = im.width * scl;
+        cropCanv.height = im.height * scl;
         
-        ctx.drawImage(img, 0, 0, cropCanvas.width, cropCanvas.height);
+        ctx.drawImage(im, 0, 0, cropCanv.width, cropCanv.height);
         
-        const size = Math.min(cropCanvas.width, cropCanvas.height) * 0.8;
-        cropRect = {
-            x: (cropCanvas.width - size) / 2,
-            y: (cropCanvas.height - size) / 2,
-            size: size,
-            scale: scale,
-            img: img,
-            files: files
+        const sz = Math.min(cropCanv.width, cropCanv.height) * 0.8;
+        cropRct = {
+            x: (cropCanv.width - sz) / 2,
+            y: (cropCanv.height - sz) / 2,
+            size: sz,
+            scale: scl,
+            img: im,
+            files: fls
         };
         
-        drawCropOverlay();
+        drawCropOvrly();
     }
 
-    function drawCropOverlay() {
-        ctx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
-        ctx.drawImage(cropRect.img, 0, 0, cropCanvas.width, cropCanvas.height);
+    function drawCropOvrly() {
+        ctx.clearRect(0, 0, cropCanv.width, cropCanv.height);
+        ctx.drawImage(cropRct.img, 0, 0, cropCanv.width, cropCanv.height);
         
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
+        ctx.fillRect(0, 0, cropCanv.width, cropCanv.height);
         
-        ctx.clearRect(cropRect.x, cropRect.y, cropRect.size, cropRect.size);
-        ctx.drawImage(cropRect.img, 
-            cropRect.x / cropRect.scale, cropRect.y / cropRect.scale, 
-            cropRect.size / cropRect.scale, cropRect.size / cropRect.scale,
-            cropRect.x, cropRect.y, cropRect.size, cropRect.size
+        ctx.clearRect(cropRct.x, cropRct.y, cropRct.size, cropRct.size);
+        ctx.drawImage(cropRct.img, 
+            cropRct.x / cropRct.scale, cropRct.y / cropRct.scale, 
+            cropRct.size / cropRct.scale, cropRct.size / cropRct.scale,
+            cropRct.x, cropRct.y, cropRct.size, cropRct.size
         );
         
         ctx.strokeStyle = '#667eea';
         ctx.lineWidth = 3;
-        ctx.strokeRect(cropRect.x, cropRect.y, cropRect.size, cropRect.size);
+        ctx.strokeRect(cropRct.x, cropRct.y, cropRct.size, cropRct.size);
         
-        const handleSize = 10;
+        const hndsz = 10;
         ctx.fillStyle = '#667eea';
-        ctx.fillRect(cropRect.x - handleSize/2, cropRect.y - handleSize/2, handleSize, handleSize);
-        ctx.fillRect(cropRect.x + cropRect.size - handleSize/2, cropRect.y - handleSize/2, handleSize, handleSize);
-        ctx.fillRect(cropRect.x - handleSize/2, cropRect.y + cropRect.size - handleSize/2, handleSize, handleSize);
-        ctx.fillRect(cropRect.x + cropRect.size - handleSize/2, cropRect.y + cropRect.size - handleSize/2, handleSize, handleSize);
+        ctx.fillRect(cropRct.x - hndsz/2, cropRct.y - hndsz/2, hndsz, hndsz);
+        ctx.fillRect(cropRct.x + cropRct.size - hndsz/2, cropRct.y - hndsz/2, hndsz, hndsz);
+        ctx.fillRect(cropRct.x - hndsz/2, cropRct.y + cropRct.size - hndsz/2, hndsz, hndsz);
+        ctx.fillRect(cropRct.x + cropRct.size - hndsz/2, cropRct.y + cropRct.size - hndsz/2, hndsz, hndsz);
     }
 
-    cropCanvas.addEventListener('mousedown', function(e) {
-        const rect = cropCanvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+    cropCanv.addEventListener('mousedown', function(e) {
+        const rct = cropCanv.getBoundingClientRect();
+        const x = e.clientX - rct.left;
+        const y = e.clientY - rct.top;
         
-        if (x >= cropRect.x && x <= cropRect.x + cropRect.size &&
-            y >= cropRect.y && y <= cropRect.y + cropRect.size) {
-            isDragging = true;
-            dragStart = { x: x - cropRect.x, y: y - cropRect.y };
+        if (x >= cropRct.x && x <= cropRct.x + cropRct.size &&
+            y >= cropRct.y && y <= cropRct.y + cropRct.size) {
+            isDrag = true;
+            dragStrt = { x: x - cropRct.x, y: y - cropRct.y };
         }
     });
 
-    cropCanvas.addEventListener('mousemove', function(e) {
-        if (!isDragging) return;
+    cropCanv.addEventListener('mousemove', function(e) {
+        if (!isDrag) return;
         
-        const rect = cropCanvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const rct = cropCanv.getBoundingClientRect();
+        const x = e.clientX - rct.left;
+        const y = e.clientY - rct.top;
         
-        cropRect.x = Math.max(0, Math.min(x - dragStart.x, cropCanvas.width - cropRect.size));
-        cropRect.y = Math.max(0, Math.min(y - dragStart.y, cropCanvas.height - cropRect.size));
+        cropRct.x = Math.max(0, Math.min(x - dragStrt.x, cropCanv.width - cropRct.size));
+        cropRct.y = Math.max(0, Math.min(y - dragStrt.y, cropCanv.height - cropRct.size));
         
-        drawCropOverlay();
+        drawCropOvrly();
     });
 
-    cropCanvas.addEventListener('mouseup', function() {
-        isDragging = false;
+    cropCanv.addEventListener('mouseup', function() {
+        isDrag = false;
     });
 
     document.getElementById('confirmCrop').addEventListener('click', function() {
-        const croppedCanvas = document.createElement('canvas');
-        croppedCanvas.width = cropRect.size;
-        croppedCanvas.height = cropRect.size;
-        const croppedCtx = croppedCanvas.getContext('2d');
+        const crpdCanv = document.createElement('canvas');
+        crpdCanv.width = cropRct.size;
+        crpdCanv.height = cropRct.size;
+        const crpdCtx = crpdCanv.getContext('2d');
         
-        croppedCtx.drawImage(cropRect.img,
-            cropRect.x / cropRect.scale, cropRect.y / cropRect.scale,
-            cropRect.size / cropRect.scale, cropRect.size / cropRect.scale,
-            0, 0, cropRect.size, cropRect.size
+        crpdCtx.drawImage(cropRct.img,
+            cropRct.x / cropRct.scale, cropRct.y / cropRct.scale,
+            cropRct.size / cropRct.scale, cropRct.size / cropRct.scale,
+            0, 0, cropRct.size, cropRct.size
         );
         
-        const croppedImageData = croppedCanvas.toDataURL('image/png');
+        const crpdData = crpdCanv.toDataURL('image/png');
         
-        processedImages.push({
-            data: croppedImageData,
-            filename: `icon_${currentCropIndex + 1}.png`
+        procsdImgs.push({
+            data: crpdData,
+            filename: `icon_${currCropIdx + 1}.png`
         });
         
-        currentCropIndex++;
-        processNextImage(cropRect.files);
+        currCropIdx++;
+        procNextImg(cropRct.files);
     });
 
     document.getElementById('cancelCrop').addEventListener('click', function() {
-        currentCropIndex++;
-        processNextImage(cropRect.files);
+        currCropIdx++;
+        procNextImg(cropRct.files);
     });
 
-    // Form submission
-    form.addEventListener('submit', async function(e) {
+    frm.addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        if (processedImages.length === 0) {
-            alert('Please select at least one image!');
+        if (procsdImgs.length === 0) {
+            alert('bruh select a pic first');
             return;
         }
 
         const formData = new FormData();
         
-        // Convert all images to blobs and add to formData
-        for (let i = 0; i < processedImages.length; i++) {
-            const blob = await (await fetch(processedImages[i].data)).blob();
-            formData.append('iconImages[]', blob, `icon_${i}.png`);
+        for (let i = 0; i < procsdImgs.length; i++) {
+            const blb = await (await fetch(procsdImgs[i].data)).blob();
+            formData.append('iconImages[]', blb, `icon_${i}.png`);
         }
         
         formData.append('packName', document.getElementById('packName').value);
         formData.append('packAuthor', document.getElementById('packAuthor').value);
         
-        submitBtn.disabled = true;
+        submitBt.disabled = true;
         document.querySelector('.btn-text').style.display = 'none';
         document.querySelector('.btn-loading').style.display = 'inline';
 
         try {
-            const response = await fetch('process.php', {
+            const resp = await fetch('process.php', {
                 method: 'POST',
                 body: formData
             });
 
-            const data = await response.json();
+            const data = await resp.json();
 
             if (data.success) {
-                // Increment icons counter
                 fetch(`stats.php?action=icon`)
                     .then(r => r.json())
                     .then(d => {
-                        if (d.success) updateStatsDisplay(d.stats);
+                        if (d.success) updtStts(d.stats);
                     });
                 
-                // START DOWNLOAD IMMEDIATELY
-                const link = document.createElement('a');
-                link.href = data.downloadUrl;
-                link.download = data.filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                const lnk = document.createElement('a');
+                lnk.href = data.downloadUrl;
+                lnk.download = data.filename;
+                document.body.appendChild(lnk);
+                lnk.click();
+                document.body.removeChild(lnk);
                 
-                // Show success message
-                result.className = 'result success';
-                result.innerHTML = `
-                    <h3>✓ Success!</h3>
+                rslt.className = 'result success';
+                rslt.innerHTML = `
+                    <h3>✓ done!</h3>
                     <p>${data.message}</p>
                     <p style="font-size: 14px; color: #666; margin-top: 10px;">
-                        <i class="nf nf-fa-download"></i> Download started! File will be deleted after download completes.
+                        <i class="nf nf-fa-download"></i> download started! file gets deleted after.
                     </p>
                 `;
                 
-                // THEN show donation popup
                 setTimeout(() => {
-                    showDonationModal();
+                    showDonateModal();
                 }, 500);
             } else {
-                result.className = 'result error';
-                result.innerHTML = `
-                    <h3>✗ Error</h3>
+                rslt.className = 'result error';
+                rslt.innerHTML = `
+                    <h3>✗ shit broke</h3>
                     <p>${data.message}</p>
                 `;
             }
-        } catch (error) {
-            result.className = 'result error';
-            result.innerHTML = `
-                <h3>✗ Error</h3>
-                <p>An unexpected error occurred. Please try again.</p>
+        } catch (err) {
+            rslt.className = 'result error';
+            rslt.innerHTML = `
+                <h3>✗ error</h3>
+                <p>something fucked up, try again</p>
             `;
         } finally {
-            submitBtn.disabled = false;
+            submitBt.disabled = false;
             document.querySelector('.btn-text').style.display = 'inline';
             document.querySelector('.btn-loading').style.display = 'none';
         }
     });
 
-    // Donation modal - shows AFTER download starts
-    function showDonationModal() {
-        const modalOverlay = document.createElement('div');
-        modalOverlay.className = 'modal-overlay';
+    function showDonateModal() {
+        const modOvr = document.createElement('div');
+        modOvr.className = 'modal-overlay';
         
-        const modal = document.createElement('div');
-        modal.className = 'modal';
-        modal.innerHTML = `
+        const mod = document.createElement('div');
+        mod.className = 'modal';
+        mod.innerHTML = `
             <div class="modal-content">
                 <div class="modal-header">
                     <i class="nf nf-fa-heart" style="color: #e74c3c; font-size: 48px;"></i>
-                    <h2>💝 Enjoying the Tool?</h2>
+                    <h2>💝 liking it?</h2>
                 </div>
                 <div class="modal-body">
                     <p style="font-size: 16px; color: #666; margin-bottom: 20px;">
-                        This tool is <strong>100% free</strong> and always will be! 
-                        If you found it helpful, please consider supporting the developer!
+                        this tools <strong>100% free</strong> and always will be! 
+                        if u found it helpful, consider donating!
                     </p>
                     <div class="modal-buttons">
-                        <a href="https://malikhw.github.io/donate" target="_blank" class="modal-btn donate-btn" onclick="window.donationModalClose()">
-                            <i class="nf nf-fa-heart"></i> Donate ❤️
+                        <a href="https://malikhw.github.io/donate" target="_blank" class="modal-btn donate-btn" onclick="window.donateModalClose()">
+                            <i class="nf nf-fa-heart"></i> donate ❤️
                         </a>
-                        <button type="button" class="modal-btn close-btn" id="closeDonation">
-                            <i class="nf nf-fa-times"></i> Close
+                        <button type="button" class="modal-btn close-btn" id="closeDonate">
+                            <i class="nf nf-fa-times"></i> nah
                         </button>
                     </div>
                     <p style="font-size: 12px; color: #999; margin-top: 15px;">
-                        No pressure! Your download has already started 😊
+                        no pressure! ur download already started 😊
                     </p>
                 </div>
             </div>
         `;
         
-        modalOverlay.appendChild(modal);
-        document.body.appendChild(modalOverlay);
+        modOvr.appendChild(mod);
+        document.body.appendChild(modOvr);
         
-        setTimeout(() => modalOverlay.classList.add('active'), 10);
+        setTimeout(() => modOvr.classList.add('active'), 10);
         
-        // Close button and donation button both close modal
-        window.donationModalClose = function() {
-            closeDonationAndShowShare();
+        window.donateModalClose = function() {
+            closeDonateAndShare();
         };
         
-        document.getElementById('closeDonation').addEventListener('click', closeDonationAndShowShare);
+        document.getElementById('closeDonate').addEventListener('click', closeDonateAndShare);
         
-        function closeDonationAndShowShare() {
-            modalOverlay.classList.remove('active');
+        function closeDonateAndShare() {
+            modOvr.classList.remove('active');
             setTimeout(() => {
-                document.body.removeChild(modalOverlay);
-                // Show share popup after donation modal closes
+                document.body.removeChild(modOvr);
                 showSharePopup();
             }, 300);
         }
     }
 
-    // Share popup
     function showSharePopup() {
-        const shareText = document.querySelector('meta[name="share-text"]').content;
+        const shareTxt = document.querySelector('meta[name="share-text"]').content;
         
-        const shareOverlay = document.createElement('div');
-        shareOverlay.className = 'modal-overlay';
+        const shareOvr = document.createElement('div');
+        shareOvr.className = 'modal-overlay';
         
-        const shareModal = document.createElement('div');
-        shareModal.className = 'modal';
-        shareModal.innerHTML = `
+        const shareMod = document.createElement('div');
+        shareMod.className = 'modal';
+        shareMod.innerHTML = `
             <div class="modal-content">
                 <div class="modal-header">
                     <i class="nf nf-fa-share_alt" style="color: #667eea; font-size: 48px;"></i>
-                    <h2>📢 Help Spread the Word!</h2>
+                    <h2>📢 spread the word!</h2>
                 </div>
                 <div class="modal-body">
                     <p style="font-size: 15px; color: #666; margin-bottom: 15px;">
-                        Love the tool? Share it with others! Copy this text:
+                        loved the tool? share it! copy this:
                     </p>
                     <div class="share-text-box">
-                        <textarea id="shareTextArea" readonly>${shareText}</textarea>
+                        <textarea id="shareTextArea" readonly>${shareTxt}</textarea>
                     </div>
                     <div class="modal-buttons">
-                        <button type="button" class="modal-btn copy-btn" id="copyShareText">
-                            <i class="nf nf-fa-copy"></i> Copy Text
+                        <button type="button" class="modal-btn copy-btn" id="copyShareTxt">
+                            <i class="nf nf-fa-copy"></i> copy
                         </button>
                         <button type="button" class="modal-btn close-btn" id="closeShare">
-                            <i class="nf nf-fa-times"></i> Close
+                            <i class="nf nf-fa-times"></i> close
                         </button>
                     </div>
                     <p style="font-size: 12px; color: #999; margin-top: 15px;">
-                        Post it on Reddit, Discord, Twitter, anywhere! Every share helps 🙏
+                        post it anywhere! reddit, discord, twitter, wherever 🙏
                     </p>
                 </div>
             </div>
         `;
         
-        shareOverlay.appendChild(shareModal);
-        document.body.appendChild(shareOverlay);
+        shareOvr.appendChild(shareMod);
+        document.body.appendChild(shareOvr);
         
-        setTimeout(() => shareOverlay.classList.add('active'), 10);
+        setTimeout(() => shareOvr.classList.add('active'), 10);
         
-        // Copy button
-        document.getElementById('copyShareText').addEventListener('click', function() {
-            const textarea = document.getElementById('shareTextArea');
-            textarea.select();
+        document.getElementById('copyShareTxt').addEventListener('click', function() {
+            const txtarea = document.getElementById('shareTextArea');
+            txtarea.select();
             document.execCommand('copy');
             
-            this.innerHTML = '<i class="nf nf-fa-check"></i> Copied!';
+            this.innerHTML = '<i class="nf nf-fa-check"></i> copied!';
             this.style.background = '#28a745';
             
             setTimeout(() => {
-                this.innerHTML = '<i class="nf nf-fa-copy"></i> Copy Text';
+                this.innerHTML = '<i class="nf nf-fa-copy"></i> copy';
                 this.style.background = '';
             }, 2000);
         });
         
-        // Close button
         document.getElementById('closeShare').addEventListener('click', function() {
-            shareOverlay.classList.remove('active');
-            setTimeout(() => document.body.removeChild(shareOverlay), 300);
+            shareOvr.classList.remove('active');
+            setTimeout(() => document.body.removeChild(shareOvr), 300);
         });
     }
 });

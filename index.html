@@ -12,29 +12,28 @@
     <meta property="og:type" content="website">
     <meta property="og:image" content="pack.png">
     <meta name="share-text" content="Yo check out this free tool to make custom GD icons from any pic! No tutorials needed, just upload and download. Supports up to 99 images! gdiconmaker.rf.gd">
+    <meta name="color-scheme" content="light dark">
     <link rel="icon" type="image/png" href="pack.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Stats Counter -->
-        <div class="stats-counter">
-            <div class="stat-item">
-                <i class="nf nf-fa-eye"></i>
-                <span id="totalVisits">Loading...</span>
-                <small>Visits</small>
-            </div>
-            <div class="stat-item">
-                <i class="nf nf-fa-image"></i>
-                <span id="totalIcons">Loading...</span>
-                <small>Icons Made</small>
-            </div>
+    <div class="stats-outside">
+        <div class="stat-box">
+            <i class="nf nf-fa-eye"></i>
+            <span id="totalVisits">...</span>
+            <small>visits</small>
         </div>
+        <div class="stat-box">
+            <i class="nf nf-fa-image"></i>
+            <span id="totalIcons">...</span>
+            <small>made</small>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1><img src="head.png" alt="GD Custom Icons Maker" class="logo"></h1>
+        <p class="subtitle">make ur custom gd icon pack</p>
         
-        <h1><i class="nf nf-fa-gamepad"></i> GD Custom Icons Maker</h1>
-        <p class="subtitle">Create your custom Geometry Dash icon pack</p>
-        
-        <!-- HOW TO INSTALL Dropdown -->
         <div class="tutorial-dropdown">
             <button type="button" class="tutorial-toggle" id="tutorialToggle">
                 <i class="nf nf-fa-question_circle"></i> HOW TO INSTALL
@@ -80,54 +79,68 @@
         
         <form id="iconForm" enctype="multipart/form-data">
             <div class="upload-section">
-                <label for="iconImage" class="upload-label">
+                <div class="upload-label" id="dropZone">
                     <span class="upload-icon"><i class="nf nf-fa-folder_open"></i></span>
-                    <span>Choose Your Icon(s) - Max 99 images (recommended 108x108px or larger)</span>
-                </label>
-                <input type="file" id="iconImage" name="iconImage[]" accept="image/*" multiple required>
+                    <span>drop ur pics here or click (max 99 pics)</span>
+                    <input type="file" id="iconImage" name="iconImage[]" accept="image/*" multiple required>
+                </div>
+                
+                <div id="previewBox" class="preview-box" style="display:none;">
+                    <p>preview of icon:</p>
+                    <canvas id="previewCanvas"></canvas>
+                    <p class="preview-note">this is how itll look in-game (cropped view)</p>
+                </div>
+                
                 <div id="imagePreview" class="image-preview"></div>
                 <div id="cropContainer" class="crop-container" style="display:none;">
+                    <p>crop ur pic to square:</p>
                     <canvas id="cropCanvas"></canvas>
                     <div class="crop-controls">
-                        <button type="button" id="confirmCrop" class="crop-btn"><i class="nf nf-fa-check"></i> Confirm Crop</button>
-                        <button type="button" id="cancelCrop" class="crop-btn cancel"><i class="nf nf-fa-times"></i> Cancel</button>
+                        <button type="button" id="confirmCrop" class="crop-btn"><i class="nf nf-fa-check"></i> ok</button>
+                        <button type="button" id="cancelCrop" class="crop-btn cancel"><i class="nf nf-fa-times"></i> nah</button>
                     </div>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="packName"><i class="nf nf-fa-tag"></i> Pack Name:</label>
-                <input type="text" id="packName" name="packName" placeholder="My Awesome Pack" required>
+                <label for="packName"><i class="nf nf-fa-tag"></i> pack name:</label>
+                <input type="text" id="packName" name="packName" placeholder="my sick pack" required>
             </div>
 
             <div class="form-group">
-                <label for="packAuthor"><i class="nf nf-fa-user"></i> Author:</label>
-                <input type="text" id="packAuthor" name="packAuthor" placeholder="Your Name" required>
+                <label for="packAuthor"><i class="nf nf-fa-user"></i> author:</label>
+                <input type="text" id="packAuthor" name="packAuthor" placeholder="ur name" required>
             </div>
 
             <button type="submit" id="submitBtn" class="submit-btn">
-                <span class="btn-text"><i class="nf nf-fa-magic"></i> Generate Icon Pack</span>
-                <span class="btn-loading" style="display:none;"><i class="nf nf-fa-spinner"></i> Processing...</span>
+                <span class="btn-text"><i class="nf nf-fa-magic"></i> generate pack</span>
+                <span class="btn-loading" style="display:none;">
+                    <i class="nf nf-fa-circle_o_notch nf-spin"></i> okay, it's cookin'...
+                </span>
             </button>
         </form>
 
         <div id="result" class="result"></div>
 
         <footer class="footer">
-            <p>Made with <i class="nf nf-fa-heart" style="color:#e74c3c;"></i> by <strong>MalikHw47</strong></p>
+            <p>made with <i class="nf nf-fa-heart" style="color:#e74c3c;"></i> and shit by <strong>MalikHw47</strong></p>
             <div class="social-links">
                 <a href="https://youtube.com/@MalikHw47" target="_blank" title="YouTube"><i class="nf nf-fa-youtube_play"></i></a>
                 <a href="https://twitch.tv/MalikHw47" target="_blank" title="Twitch"><i class="nf nf-fa-twitch"></i></a>
                 <a href="https://github.com/MalikHw" target="_blank" title="GitHub"><i class="nf nf-fa-github"></i></a>
                 <a href="https://malikhw.github.io" target="_blank" title="Website"><i class="nf nf-fa-globe"></i></a>
-                <a href="https://malikhw.github.io/donate" target="_blank" title="Donate" class="donate-link"><i class="nf nf-fa-heart"></i> Donate</a>
+                <a href="mailto:help.malicorporation@gmail.com" title="Email"><i class="nf nf-fa-envelope"></i></a>
+                <a href="https://malikhw.github.io/donate" target="_blank" title="Donate" class="donate-link"><i class="nf nf-fa-heart"></i> donate</a>
             </div>
             <div class="footer-links">
                 <a href="https://github.com/MalikHw/GDIconMaker" target="_blank" class="source-link">
-                    <i class="nf nf-fa-code"></i> View Source Code
+                    <i class="nf nf-fa-code"></i> src code
+                </a>
+                <a href="https://github.com/MalikHw/GDIconMaker/issues" target="_blank" class="bug-link">
+                    <i class="nf nf-fa-bug"></i> report bug
                 </a>
                 <a href="privacy.html" class="privacy-link">
-                    <i class="nf nf-fa-lock"></i> Privacy Policy
+                    <i class="nf nf-fa-lock"></i> privacy
                 </a>
             </div>
         </footer>
