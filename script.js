@@ -2,21 +2,39 @@ document.addEventListener('DOMContentLoaded', function() {
     const frm = document.getElementById('iconForm');
     const fileIn = document.getElementById('iconImage');
     const imgPrev = document.getElementById('imagePreview');
-    const cropBox = document.getElementById('cropContainer');
+    const cropMdl = document.getElementById('cropModal');
     const cropCanv = document.getElementById('cropCanvas');
     const ctx = cropCanv.getContext('2d');
+    const cropPrevCanv = document.getElementById('cropPreviewCanvas');
+    const cropPrevCtx = cropPrevCanv.getContext('2d');
     const submitBt = document.getElementById('submitBtn');
     const rslt = document.getElementById('result');
     const dropZone = document.getElementById('dropZone');
     const prevBox = document.getElementById('previewBox');
     const prevCanv = document.getElementById('previewCanvas');
     const prevCtx = prevCanv.getContext('2d');
+    const cropProg = document.getElementById('cropProgress');
+    const authIn = document.getElementById('packAuthor');
     
     let procsdImgs = [];
     let currCropIdx = -1;
+    let allFiles = [];
     let cropRct = { x: 0, y: 0, size: 0 };
     let isDrag = false;
+    let isRsz = false;
     let dragStrt = { x: 0, y: 0 };
+    let rszCorner = null;
+    let currImg = null;
+    let imgScale = 1;
+
+    const savedAuth = localStorage.getItem('gdIconAuthor');
+    if (savedAuth) {
+        authIn.value = savedAuth;
+    }
+
+    authIn.addEventListener('change', function() {
+        localStorage.setItem('gdIconAuthor', this.value);
+    });
 
     document.getElementById('tutorialToggle').addEventListener('click', function() {
         this.classList.toggle('active');
@@ -24,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     loadStts();
+    loadYT();
     
     fetch('stats.php?action=visit')
         .then(r => r.json())
@@ -44,6 +63,38 @@ document.addEventListener('DOMContentLoaded', function() {
     function updtStts(stts) {
         document.getElementById('totalVisits').textContent = stts.total_visits.toLocaleString();
         document.getElementById('totalIcons').textContent = stts.total_icons.toLocaleString();
+    }
+
+    function loadYT() {
+        fetch('ytconfig.php')
+            .then(r => r.json())
+            .then(d => {
+                const ytCont = document.getElementById('youtubeEmbed');
+                if (d.visible && d.videoId) {
+                    ytCont.innerHTML = `<iframe src="https://www.youtube.com/embed/${d.videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                } else {
+                    ytCont.innerHTML = `
+                        <div class="youtube-placeholder">
+                            <i class="nf nf-fa-video_camera"></i>
+                            <p>we're looking for anyone who can do the yt tutorial video!</p>
+                            <a href="https://forms.gle/3jY4UEEc5tBVBVWm7" target="_blank">
+                                <i class="nf nf-fa-external_link"></i> help us out
+                            </a>
+                        </div>
+                    `;
+                }
+            })
+            .catch(e => {
+                document.getElementById('youtubeEmbed').innerHTML = `
+                    <div class="youtube-placeholder">
+                        <i class="nf nf-fa-video_camera"></i>
+                        <p>we're looking for anyone who can do the yt tutorial video!</p>
+                        <a href="https://forms.gle/3jY4UEEc5tBVBVWm7" target="_blank">
+                            <i class="nf nf-fa-external_link"></i> help us out
+                        </a>
+                    </div>
+                `;
+            });
     }
 
     dropZone.addEventListener('dragover', (e) => {
@@ -82,18 +133,19 @@ document.addEventListener('DOMContentLoaded', function() {
         procsdImgs = [];
         imgPrev.innerHTML = '';
         prevBox.style.display = 'none';
+        allFiles = fls;
         currCropIdx = 0;
         
-        procNextImg(fls);
+        procNextImg();
     });
 
-    function procNextImg(fls) {
-        if (currCropIdx >= fls.length) {
+    function procNextImg() {
+        if (currCropIdx >= allFiles.length) {
             dispAllPrevs();
             return;
         }
 
-        const fl = fls[currCropIdx];
+        const fl = allFiles[currCropIdx];
         const rdr = new FileReader();
         
         rdr.onload = function(evt) {
@@ -105,14 +157,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 if (im.width !== im.height) {
-                    showCropUI(im, evt.target.result, fls);
+                    showCropMdl(im, evt.target.result);
                 } else {
                     procsdImgs.push({
                         data: evt.target.result,
                         filename: fl.name
                     });
                     currCropIdx++;
-                    procNextImg(fls);
+                    procNextImg();
                 }
             };
             im.src = evt.target.result;
@@ -145,8 +197,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
-
-        cropBox.style.display = 'none';
         
         if (procsdImgs.length > 0) {
             genPreview(procsdImgs[0].data);
@@ -182,17 +232,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function showCropUI(im, imgSrc, fls) {
-        cropBox.style.display = 'block';
+    function showCropMdl(im, imgSrc) {
+        currImg = im;
+        cropProg.textContent = `pic ${currCropIdx + 1} of ${allFiles.length}`;
         
-        const maxSz = 500;
-        let scl = 1;
+        const maxSz = 600;
+        imgScale = 1;
         if (im.width > maxSz || im.height > maxSz) {
-            scl = maxSz / Math.max(im.width, im.height);
+            imgScale = maxSz / Math.max(im.width, im.height);
         }
         
-        cropCanv.width = im.width * scl;
-        cropCanv.height = im.height * scl;
+        cropCanv.width = im.width * imgScale;
+        cropCanv.height = im.height * imgScale;
         
         ctx.drawImage(im, 0, 0, cropCanv.width, cropCanv.height);
         
@@ -200,26 +251,27 @@ document.addEventListener('DOMContentLoaded', function() {
         cropRct = {
             x: (cropCanv.width - sz) / 2,
             y: (cropCanv.height - sz) / 2,
-            size: sz,
-            scale: scl,
-            img: im,
-            files: fls
+            size: sz
         };
         
         drawCropOvrly();
+        updtCropPrev();
+        cropMdl.classList.add('active');
+        
+        setupCropEvts();
     }
 
     function drawCropOvrly() {
         ctx.clearRect(0, 0, cropCanv.width, cropCanv.height);
-        ctx.drawImage(cropRct.img, 0, 0, cropCanv.width, cropCanv.height);
+        ctx.drawImage(currImg, 0, 0, cropCanv.width, cropCanv.height);
         
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
         ctx.fillRect(0, 0, cropCanv.width, cropCanv.height);
         
         ctx.clearRect(cropRct.x, cropRct.y, cropRct.size, cropRct.size);
-        ctx.drawImage(cropRct.img, 
-            cropRct.x / cropRct.scale, cropRct.y / cropRct.scale, 
-            cropRct.size / cropRct.scale, cropRct.size / cropRct.scale,
+        ctx.drawImage(currImg, 
+            cropRct.x / imgScale, cropRct.y / imgScale, 
+            cropRct.size / imgScale, cropRct.size / imgScale,
             cropRct.x, cropRct.y, cropRct.size, cropRct.size
         );
         
@@ -227,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.lineWidth = 3;
         ctx.strokeRect(cropRct.x, cropRct.y, cropRct.size, cropRct.size);
         
-        const hndsz = 10;
+        const hndsz = 12;
         ctx.fillStyle = '#667eea';
         ctx.fillRect(cropRct.x - hndsz/2, cropRct.y - hndsz/2, hndsz, hndsz);
         ctx.fillRect(cropRct.x + cropRct.size - hndsz/2, cropRct.y - hndsz/2, hndsz, hndsz);
@@ -235,62 +287,189 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.fillRect(cropRct.x + cropRct.size - hndsz/2, cropRct.y + cropRct.size - hndsz/2, hndsz, hndsz);
     }
 
-    cropCanv.addEventListener('mousedown', function(e) {
+    function updtCropPrev() {
+        cropPrevCanv.width = 119;
+        cropPrevCanv.height = 119;
+        
+        const tmpCanv = document.createElement('canvas');
+        tmpCanv.width = cropRct.size;
+        tmpCanv.height = cropRct.size;
+        const tmpCtx = tmpCanv.getContext('2d');
+        
+        tmpCtx.drawImage(currImg,
+            cropRct.x / imgScale, cropRct.y / imgScale,
+            cropRct.size / imgScale, cropRct.size / imgScale,
+            0, 0, cropRct.size, cropRct.size
+        );
+        
+        const prvTmpCanv = document.createElement('canvas');
+        prvTmpCanv.width = 108;
+        prvTmpCanv.height = 108;
+        const prvTmpCtx = prvTmpCanv.getContext('2d');
+        prvTmpCtx.drawImage(tmpCanv, 0, 0, 108, 108);
+        
+        fetch('preview.php', {
+            method: 'POST',
+            body: (() => {
+                const fd = new FormData();
+                fd.append('previewOnly', 'true');
+                prvTmpCanv.toBlob(b => {
+                    fd.append('iconImages[]', b, 'crop.png');
+                });
+                return fd;
+            })()
+        }).then(r => r.json()).then(d => {
+            if (d.success) {
+                const prvIm = new Image();
+                prvIm.onload = () => {
+                    cropPrevCtx.drawImage(prvIm, 31, 2, 119, 119, 0, 0, 119, 119);
+                };
+                prvIm.src = 'data:image/png;base64,' + d.preview;
+            }
+        }).catch(() => {});
+    }
+
+    function setupCropEvts() {
+        const evts = {
+            mousedown: hndlMseDown,
+            mousemove: hndlMseMove,
+            mouseup: hndlMseUp
+        };
+        
+        Object.keys(evts).forEach(evt => {
+            cropCanv.removeEventListener(evt, evts[evt]);
+            cropCanv.addEventListener(evt, evts[evt]);
+        });
+    }
+
+    function hndlMseDown(e) {
         const rct = cropCanv.getBoundingClientRect();
         const x = e.clientX - rct.left;
         const y = e.clientY - rct.top;
+        
+        const hndsz = 12;
+        const corners = [
+            { x: cropRct.x, y: cropRct.y, name: 'tl' },
+            { x: cropRct.x + cropRct.size, y: cropRct.y, name: 'tr' },
+            { x: cropRct.x, y: cropRct.y + cropRct.size, name: 'bl' },
+            { x: cropRct.x + cropRct.size, y: cropRct.y + cropRct.size, name: 'br' }
+        ];
+        
+        for (const c of corners) {
+            if (x >= c.x - hndsz && x <= c.x + hndsz && y >= c.y - hndsz && y <= c.y + hndsz) {
+                isRsz = true;
+                rszCorner = c.name;
+                dragStrt = { x, y, origRct: {...cropRct} };
+                return;
+            }
+        }
         
         if (x >= cropRct.x && x <= cropRct.x + cropRct.size &&
             y >= cropRct.y && y <= cropRct.y + cropRct.size) {
             isDrag = true;
             dragStrt = { x: x - cropRct.x, y: y - cropRct.y };
         }
-    });
+    }
 
-    cropCanv.addEventListener('mousemove', function(e) {
-        if (!isDrag) return;
+    function hndlMseMove(e) {
+        if (!isDrag && !isRsz) return;
         
         const rct = cropCanv.getBoundingClientRect();
         const x = e.clientX - rct.left;
         const y = e.clientY - rct.top;
         
-        cropRct.x = Math.max(0, Math.min(x - dragStrt.x, cropCanv.width - cropRct.size));
-        cropRct.y = Math.max(0, Math.min(y - dragStrt.y, cropCanv.height - cropRct.size));
+        if (isRsz) {
+            const dx = x - dragStrt.x;
+            const dy = y - dragStrt.y;
+            const orig = dragStrt.origRct;
+            
+            let newX = orig.x;
+            let newY = orig.y;
+            let newSz = orig.size;
+            
+            if (rszCorner === 'br') {
+                newSz = Math.min(orig.size + Math.max(dx, dy), cropCanv.width - orig.x, cropCanv.height - orig.y);
+            } else if (rszCorner === 'bl') {
+                const chng = Math.min(-dx, dy);
+                newSz = Math.min(orig.size + chng, cropCanv.width - orig.x, orig.y + orig.size);
+                newX = orig.x + orig.size - newSz;
+            } else if (rszCorner === 'tr') {
+                const chng = Math.min(dx, -dy);
+                newSz = Math.min(orig.size + chng, cropCanv.width - orig.x, orig.y + orig.size);
+                newY = orig.y + orig.size - newSz;
+            } else if (rszCorner === 'tl') {
+                const chng = Math.min(-dx, -dy);
+                newSz = Math.min(orig.size + chng, orig.x + orig.size, orig.y + orig.size);
+                newX = orig.x + orig.size - newSz;
+                newY = orig.y + orig.size - newSz;
+            }
+            
+            cropRct = { x: newX, y: newY, size: newSz };
+        } else {
+            cropRct.x = Math.max(0, Math.min(x - dragStrt.x, cropCanv.width - cropRct.size));
+            cropRct.y = Math.max(0, Math.min(y - dragStrt.y, cropCanv.height - cropRct.size));
+        }
         
         drawCropOvrly();
-    });
+        updtCropPrev();
+    }
 
-    cropCanv.addEventListener('mouseup', function() {
+    function hndlMseUp() {
         isDrag = false;
+        isRsz = false;
+        rszCorner = null;
+    }
+
+    document.getElementById('resetCrop').addEventListener('click', () => {
+        const sz = Math.min(cropCanv.width, cropCanv.height) * 0.8;
+        cropRct = {
+            x: (cropCanv.width - sz) / 2,
+            y: (cropCanv.height - sz) / 2,
+            size: sz
+        };
+        drawCropOvrly();
+        updtCropPrev();
     });
 
-    document.getElementById('confirmCrop').addEventListener('click', function() {
+    document.getElementById('confirmCrop').addEventListener('click', confirmCrp);
+    
+    document.addEventListener('keydown', (e) => {
+        if (!cropMdl.classList.contains('active')) return;
+        if (e.key === 'Enter') confirmCrp();
+        if (e.key === 'Escape') skipCrp();
+    });
+
+    function confirmCrp() {
         const crpdCanv = document.createElement('canvas');
         crpdCanv.width = cropRct.size;
         crpdCanv.height = cropRct.size;
         const crpdCtx = crpdCanv.getContext('2d');
         
-        crpdCtx.drawImage(cropRct.img,
-            cropRct.x / cropRct.scale, cropRct.y / cropRct.scale,
-            cropRct.size / cropRct.scale, cropRct.size / cropRct.scale,
+        crpdCtx.drawImage(currImg,
+            cropRct.x / imgScale, cropRct.y / imgScale,
+            cropRct.size / imgScale, cropRct.size / imgScale,
             0, 0, cropRct.size, cropRct.size
         );
         
-        const crpdData = crpdCanv.toDataURL('image/png');
-        
         procsdImgs.push({
-            data: crpdData,
+            data: crpdCanv.toDataURL('image/png'),
             filename: `icon_${currCropIdx + 1}.png`
         });
         
-        currCropIdx++;
-        procNextImg(cropRct.files);
-    });
+        closeCropMdl();
+    }
 
-    document.getElementById('cancelCrop').addEventListener('click', function() {
+    document.getElementById('cancelCrop').addEventListener('click', skipCrp);
+
+    function skipCrp() {
+        closeCropMdl();
+    }
+
+    function closeCropMdl() {
+        cropMdl.classList.remove('active');
         currCropIdx++;
-        procNextImg(cropRct.files);
-    });
+        setTimeout(() => procNextImg(), 100);
+    }
 
     frm.addEventListener('submit', async function(e) {
         e.preventDefault();
