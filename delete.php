@@ -27,13 +27,13 @@ if (!file_exists($file)) {
     exit;
 }
 
-// If delay is specified, wait before deleting
+// If delay is gave, wait before deleting
 if ($delay > 0) {
     // Close connection so user doesn't wait
     ignore_user_abort(true);
     set_time_limit(0);
     
-    // Send response immediately
+    // Send response rn
     echo json_encode(['success' => true, 'message' => 'Deletion scheduled']);
     
     // Flush output
@@ -53,7 +53,7 @@ if ($delay > 0) {
 
 // Delete the file
 if (file_exists($file) && unlink($file)) {
-    // File deleted successfully (but user already got response)
+    // File deleted successfully (but user already got it)
     exit;
 } else {
     // Silent fail if file was already deleted or doesn't exist
