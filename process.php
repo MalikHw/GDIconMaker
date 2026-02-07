@@ -3,17 +3,17 @@ header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 
-function sendError($message) {
-    echo json_encode(['success' => false, 'message' => $message]);
+function sendError($msg) {
+    echo json_encode(['success' => false, 'message' => $msg]);
     exit;
 }
 
-function sendSuccess($message, $downloadUrl, $filename) {
+function sendSuccess($msg, $dlUrl, $fname) {
     echo json_encode([
         'success' => true,
-        'message' => $message,
-        'downloadUrl' => $downloadUrl,
-        'filename' => $filename
+        'message' => $msg,
+        'downloadUrl' => $dlUrl,
+        'filename' => $fname
     ]);
     exit;
 }
@@ -26,66 +26,69 @@ if (!isset($_FILES['iconImages']) || !isset($_POST['packName']) || !isset($_POST
     sendError('Missing required fields');
 }
 
-$packName = trim($_POST['packName']);
-$packAuthor = trim($_POST['packAuthor']);
+$pckName = trim($_POST['packName']);
+$pckAuth = trim($_POST['packAuthor']);
+$iconNums = isset($_POST['iconNumbers']) ? $_POST['iconNumbers'] : [];
 
-if (empty($packName) || empty($packAuthor)) {
+if (empty($pckName) || empty($pckAuth)) {
     sendError('All fields are required');
 }
 
-$packId = 'gdiconmaker.' . preg_replace('/[^a-zA-Z0-9]/', '', str_replace(' ', '', $packName));
+$pckId = 'gdiconmaker.' . preg_replace('/[^a-zA-Z0-9]/', '', str_replace(' ', '', $pckName));
 
-$uploadedFiles = $_FILES['iconImages'];
-$fileCount = is_array($uploadedFiles['tmp_name']) ? count($uploadedFiles['tmp_name']) : 1;
+$upldFiles = $_FILES['iconImages'];
+$fileCnt = is_array($upldFiles['tmp_name']) ? count($upldFiles['tmp_name']) : 1;
 
-if ($fileCount > 99) {
+if ($fileCnt > 99) {
     sendError('Maximum 99 images allowed');
 }
 
-$tempDir = 'temp_' . uniqid();
-if (!mkdir($tempDir, 0755, true)) {
+$custPackIcon = isset($_FILES['customPackIcon']) && $_FILES['customPackIcon']['error'] === UPLOAD_ERR_OK;
+
+$tmpDir = 'temp_' . uniqid();
+if (!mkdir($tmpDir, 0755, true)) {
     sendError('Failed to create temporary directory');
 }
 
-$iconsDir = $tempDir . '/icons';
-if (!mkdir($iconsDir, 0755, true)) {
+$icnsDir = $tmpDir . '/icons';
+if (!mkdir($icnsDir, 0755, true)) {
     sendError('Failed to create icons directory');
 }
 
 try {
-    // Process each uploaded image
-    for ($i = 0; $i < $fileCount; $i++) {
-        $imageIndex = $i + 1; // Start from 1 (player_01, player_02, etc.)
+    for ($i = 0; $i < $fileCnt; $i++) {
+        $iconIdx = isset($iconNums[$i]) ? intval($iconNums[$i]) : ($i + 1);
         
-        if (is_array($uploadedFiles['tmp_name'])) {
-            $tmpName = $uploadedFiles['tmp_name'][$i];
-            $error = $uploadedFiles['error'][$i];
+        if ($iconIdx < 1) $iconIdx = 1;
+        if ($iconIdx > 99) $iconIdx = 99;
+        
+        if (is_array($upldFiles['tmp_name'])) {
+            $tmpName = $upldFiles['tmp_name'][$i];
+            $err = $upldFiles['error'][$i];
         } else {
-            $tmpName = $uploadedFiles['tmp_name'];
-            $error = $uploadedFiles['error'];
+            $tmpName = $upldFiles['tmp_name'];
+            $err = $upldFiles['error'];
         }
 
-        if ($error !== UPLOAD_ERR_OK) {
-            throw new Exception("File upload failed for image $imageIndex");
+        if ($err !== UPLOAD_ERR_OK) {
+            throw new Exception("File upload failed for image $iconIdx");
         }
 
-        $imageInfo = getimagesize($tmpName);
-        if ($imageInfo === false) {
-            throw new Exception("Image $imageIndex is not a valid image");
+        $imgInfo = getimagesize($tmpName);
+        if ($imgInfo === false) {
+            throw new Exception("Image $iconIdx is not a valid image");
         }
 
-        $width = $imageInfo[0];
-        $height = $imageInfo[1];
+        $w = $imgInfo[0];
+        $h = $imgInfo[1];
 
-        $userImage = imagecreatefromstring(file_get_contents($tmpName));
-        if ($userImage === false) {
-            throw new Exception("Failed to load image $imageIndex");
+        $usrImg = imagecreatefromstring(file_get_contents($tmpName));
+        if ($usrImg === false) {
+            throw new Exception("Failed to load image $iconIdx");
         }
 
-        // Format index with leading zero (01, 02, ..., 99)
-        $indexStr = str_pad($imageIndex, 2, '0', STR_PAD_LEFT);
+        $idxStr = str_pad($iconIdx, 2, '0', STR_PAD_LEFT);
 
-        // Process HD version
         $hdBase = imagecreatefrompng('player_01-hd.png');
         if ($hdBase === false) {
             throw new Exception('Failed to load player_01-hd.png template');
@@ -94,25 +97,24 @@ try {
         imagealphablending($hdBase, true);
         imagesavealpha($hdBase, true);
 
-        $resizedHd = imagecreatetruecolor(55, 56);
-        imagealphablending($resizedHd, false);
-        imagesavealpha($resizedHd, true);
-        $transparent = imagecolorallocatealpha($resizedHd, 0, 0, 0, 127);
-        imagefill($resizedHd, 0, 0, $transparent);
-        imagecopyresampled($resizedHd, $userImage, 0, 0, 0, 0, 55, 56, $width, $height);
+        $reszHd = imagecreatetruecolor(55, 56);
+        imagealphablending($reszHd, false);
+        imagesavealpha($reszHd, true);
+        $transp = imagecolorallocatealpha($reszHd, 0, 0, 0, 127);
+        imagefill($reszHd, 0, 0, $transp);
+        imagecopyresampled($reszHd, $usrImg, 0, 0, 0, 0, 55, 56, $w, $h);
 
-        $rotatedHd = imagerotate($resizedHd, -90, imagecolorallocatealpha($resizedHd, 0, 0, 0, 127));
-        imagealphablending($rotatedHd, false);
-        imagesavealpha($rotatedHd, true);
+        $rotHd = imagerotate($reszHd, -90, imagecolorallocatealpha($reszHd, 0, 0, 0, 127));
+        imagealphablending($rotHd, false);
+        imagesavealpha($rotHd, true);
 
-        imagecopy($hdBase, $rotatedHd, 71, 5, 0, 0, imagesx($rotatedHd), imagesy($rotatedHd));
-        imagepng($hdBase, $iconsDir . "/player_{$indexStr}-hd.png");
+        imagecopy($hdBase, $rotHd, 71, 5, 0, 0, imagesx($rotHd), imagesy($rotHd));
+        imagepng($hdBase, $icnsDir . "/player_{$idxStr}-hd.png");
         
-        imagedestroy($resizedHd);
-        imagedestroy($rotatedHd);
+        imagedestroy($reszHd);
+        imagedestroy($rotHd);
         imagedestroy($hdBase);
 
-        // Process UHD version
         $uhdBase = imagecreatefrompng('player_01-uhd.png');
         if ($uhdBase === false) {
             throw new Exception('Failed to load player_01-uhd.png template');
@@ -121,48 +123,76 @@ try {
         imagealphablending($uhdBase, true);
         imagesavealpha($uhdBase, true);
 
-        $resizedUhd = imagecreatetruecolor(108, 108);
-        imagealphablending($resizedUhd, false);
-        imagesavealpha($resizedUhd, true);
-        $transparent = imagecolorallocatealpha($resizedUhd, 0, 0, 0, 127);
-        imagefill($resizedUhd, 0, 0, $transparent);
-        imagecopyresampled($resizedUhd, $userImage, 0, 0, 0, 0, 108, 108, $width, $height);
+        $reszUhd = imagecreatetruecolor(108, 108);
+        imagealphablending($reszUhd, false);
+        imagesavealpha($reszUhd, true);
+        $transp = imagecolorallocatealpha($reszUhd, 0, 0, 0, 127);
+        imagefill($reszUhd, 0, 0, $transp);
+        imagecopyresampled($reszUhd, $usrImg, 0, 0, 0, 0, 108, 108, $w, $h);
 
-        imagecopy($uhdBase, $resizedUhd, 37, 8, 0, 0, 108, 108);
-        imagepng($uhdBase, $iconsDir . "/player_{$indexStr}-uhd.png");
+        imagecopy($uhdBase, $reszUhd, 37, 8, 0, 0, 108, 108);
+        imagepng($uhdBase, $icnsDir . "/player_{$idxStr}-uhd.png");
         
-        imagedestroy($resizedUhd);
+        imagedestroy($reszUhd);
         imagedestroy($uhdBase);
-        imagedestroy($userImage);
+        imagedestroy($usrImg);
 
-        // Copy .plist files (use player_01 plist as template for all)
-        copy('player_01-hd.plist', $iconsDir . "/player_{$indexStr}-hd.plist");
-        copy('player_01-uhd.plist', $iconsDir . "/player_{$indexStr}-uhd.plist");
+        copy('player_01-hd.plist', $icnsDir . "/player_{$idxStr}-hd.plist");
+        copy('player_01-uhd.plist', $icnsDir . "/player_{$idxStr}-uhd.plist");
     }
 
-    // Read and modify pack.json
-    $packJsonContent = file_get_contents('pack.json');
-    if ($packJsonContent === false) {
+    $pckJsonCont = file_get_contents('pack.json');
+    if ($pckJsonCont === false) {
         throw new Exception('Failed to read pack.json');
     }
 
-    $packData = json_decode($packJsonContent, true);
-    if ($packData === null) {
+    $pckData = json_decode($pckJsonCont, true);
+    if ($pckData === null) {
         throw new Exception('Invalid pack.json format');
     }
 
-    $packData['id'] = $packId;
-    $packData['author'] = $packAuthor . ' (from gdiconmaker.rf.gd)';
-    $packData['name'] = $packName;
+    $pckData['id'] = $pckId;
+    $pckData['author'] = $pckAuth . ' (from gdiconmaker.rf.gd)';
+    $pckData['name'] = $pckName;
 
-    $modifiedPackJson = json_encode($packData, JSON_PRETTY_PRINT);
-    file_put_contents($tempDir . '/pack.json', $modifiedPackJson);
+    $modPckJson = json_encode($pckData, JSON_PRETTY_PRINT);
+    file_put_contents($tmpDir . '/pack.json', $modPckJson);
 
-    copy('pack.png', $tempDir . '/pack.png');
+    if ($custPackIcon) {
+        $custIconTmp = $_FILES['customPackIcon']['tmp_name'];
+        $custIconInfo = getimagesize($custIconTmp);
+        
+        if ($custIconInfo !== false) {
+            $custImg = imagecreatefromstring(file_get_contents($custIconTmp));
+            
+            if ($custImg !== false) {
+                $fnlIcon = imagecreatetruecolor(336, 336);
+                imagealphablending($fnlIcon, false);
+                imagesavealpha($fnlIcon, true);
+                $transp = imagecolorallocatealpha($fnlIcon, 0, 0, 0, 127);
+                imagefill($fnlIcon, 0, 0, $transp);
+                imagecopyresampled($fnlIcon, $custImg, 0, 0, 0, 0, 336, 336, $custIconInfo[0], $custIconInfo[1]);
+                
+                $txtColor = imagecolorallocatealpha($fnlIcon, 255, 255, 255, 30);
+                $txtBg = imagecolorallocatealpha($fnlIcon, 0, 0, 0, 80);
+                imagefilledrectangle($fnlIcon, 0, 300, 336, 336, $txtBg);
+                imagestring($fnlIcon, 3, 60, 312, 'GDIconMaker.rf.gd', $txtColor);
+                
+                imagepng($fnlIcon, $tmpDir . '/pack.png');
+                imagedestroy($fnlIcon);
+                imagedestroy($custImg);
+            } else {
+                copy('pack.png', $tmpDir . '/pack.png');
+            }
+        } else {
+            copy('pack.png', $tmpDir . '/pack.png');
+        }
+    } else {
+        copy('pack.png', $tmpDir . '/pack.png');
+    }
 
-    // Create ZIP file
-    $zipFilename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $packName) . '.zip';
-    $zipPath = 'downloads/' . $zipFilename;
+    $zipFname = preg_replace('/[^a-zA-Z0-9_-]/', '_', $pckName) . '.zip';
+    $zipPath = 'downloads/' . $zipFname;
 
     if (!is_dir('downloads')) {
         mkdir('downloads', 0755, true);
@@ -173,35 +203,32 @@ try {
         throw new Exception('Failed to create ZIP file');
     }
 
-    $zip->addFile($tempDir . '/pack.json', 'pack.json');
-    $zip->addFile($tempDir . '/pack.png', 'pack.png');
+    $zip->addFile($tmpDir . '/pack.json', 'pack.json');
+    $zip->addFile($tmpDir . '/pack.png', 'pack.png');
     
-    // Add all generated icon files
-    $iconFiles = glob($iconsDir . '/*');
-    foreach ($iconFiles as $file) {
-        $zip->addFile($file, 'icons/' . basename($file));
+    $iconFiles = glob($icnsDir . '/*');
+    foreach ($iconFiles as $fl) {
+        $zip->addFile($fl, 'icons/' . basename($fl));
     }
 
     $zip->close();
 
-    // Clean up temporary directory
-    array_map('unlink', glob($iconsDir . '/*'));
-    rmdir($iconsDir);
-    array_map('unlink', glob($tempDir . '/*'));
-    rmdir($tempDir);
+    array_map('unlink', glob($icnsDir . '/*'));
+    rmdir($icnsDir);
+    array_map('unlink', glob($tmpDir . '/*'));
+    rmdir($tmpDir);
 
-    // Return download.php URL instead of direct file path
-    $downloadUrl = 'download.php?file=' . urlencode($zipFilename);
-    sendSuccess("Icon pack created successfully with $fileCount icon(s)!", $downloadUrl, $zipFilename);
+    $dlUrl = 'download.php?file=' . urlencode($zipFname);
+    sendSuccess("Icon pack created successfully with $fileCnt icon(s)!", $dlUrl, $zipFname);
 
 } catch (Exception $e) {
-    if (isset($iconsDir) && is_dir($iconsDir)) {
-        @array_map('unlink', glob($iconsDir . '/*'));
-        @rmdir($iconsDir);
+    if (isset($icnsDir) && is_dir($icnsDir)) {
+        @array_map('unlink', glob($icnsDir . '/*'));
+        @rmdir($icnsDir);
     }
-    if (isset($tempDir) && is_dir($tempDir)) {
-        @array_map('unlink', glob($tempDir . '/*'));
-        @rmdir($tempDir);
+    if (isset($tmpDir) && is_dir($tmpDir)) {
+        @array_map('unlink', glob($tmpDir . '/*'));
+        @rmdir($tmpDir);
     }
     sendError($e->getMessage());
 }

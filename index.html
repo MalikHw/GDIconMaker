@@ -101,6 +101,20 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="packIcon"><i class="nf nf-fa-image"></i> custom pack icon (optional):</label>
+                    <div class="pack-icon-upload">
+                        <input type="file" id="packIcon" name="packIcon" accept="image/*">
+                        <label for="packIcon" class="pack-icon-label">
+                            <i class="nf nf-fa-upload"></i> upload pack.png
+                        </label>
+                        <div id="packIconPreview" style="display:none;">
+                            <img id="packIconImg" src="" alt="Pack Icon">
+                            <button type="button" id="removePackIcon" class="remove-pack-icon">×</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label for="packName"><i class="nf nf-fa-tag"></i> pack name:</label>
                     <input type="text" id="packName" name="packName" placeholder="my sick pack" required>
                 </div>

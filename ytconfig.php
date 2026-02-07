@@ -1,8 +1,8 @@
 <?php
 header('Content-Type: application/json');
 
-$vis = true;
-$vid = 'SVqZWcOQ61E';
+$vis = false;
+$vid = '';
 
 echo json_encode([
     'visible' => $vis,

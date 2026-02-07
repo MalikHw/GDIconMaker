@@ -30,6 +30,12 @@ body {
     margin: 0;
 }
 
+@media (max-width: 768px) {
+    body {
+        background-attachment: scroll;
+    }
+}
+
 @media (prefers-color-scheme: dark) {
     :root {
         --primary: #404040;
@@ -411,6 +417,91 @@ input[type="file"] {
 }
 
 .image-preview .remove-image:hover {
+    background: #c92a2a;
+}
+
+.image-preview .icon-number {
+    width: 100%;
+    margin-top: 5px;
+    padding: 4px;
+    text-align: center;
+    border: 2px solid var(--bg-light);
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--bg-white);
+    color: var(--text-dark);
+}
+
+.image-preview .icon-number:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.pack-icon-upload {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.pack-icon-upload input[type="file"] {
+    display: none;
+}
+
+.pack-icon-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--bg-light);
+    color: var(--text-dark);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    border: 2px solid var(--bg-light);
+}
+
+.pack-icon-label:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+#packIconPreview {
+    position: relative;
+    display: inline-block;
+}
+
+#packIconPreview img {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    border: 2px solid var(--primary);
+    object-fit: cover;
+}
+
+.remove-pack-icon {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+    border: 2px solid white;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0;
+}
+
+.remove-pack-icon:hover {
     background: #c92a2a;
 }
 
@@ -891,8 +982,19 @@ input[type="file"] {
         flex-direction: column;
     }
     
-    .crop-preview-wrapper {
+    .pack-icon-upload {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .pack-icon-label {
         width: 100%;
+        justify-content: center;
+    }
+    
+    .image-preview .icon-number {
+        font-size: 11px;
+        padding: 3px;
     }
     
     .social-links {

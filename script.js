@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const prevCtx = prevCanv.getContext('2d');
     const cropProg = document.getElementById('cropProgress');
     const authIn = document.getElementById('packAuthor');
+    const packIconIn = document.getElementById('packIcon');
+    const packIconPrev = document.getElementById('packIconPreview');
+    const packIconImg = document.getElementById('packIconImg');
     
     let procsdImgs = [];
     let currCropIdx = -1;
@@ -32,6 +35,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     authIn.addEventListener('change', function() {
         localStorage.setItem('gdIconAuthor', this.value);
+    });
+
+    packIconIn.addEventListener('change', function(e) {
+        const fl = e.target.files[0];
+        if (!fl) return;
+        
+        const rdr = new FileReader();
+        rdr.onload = function(evt) {
+            packIconImg.src = evt.target.result;
+            packIconPrev.style.display = 'block';
+        };
+        rdr.readAsDataURL(fl);
+    });
+
+    document.getElementById('removePackIcon').addEventListener('click', function() {
+        packIconIn.value = '';
+        packIconPrev.style.display = 'none';
+        packIconImg.src = '';
     });
 
     document.getElementById('tutorialToggle').addEventListener('click', function() {
@@ -179,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
             prvItem.innerHTML = `
                 <img src="${im.data}" alt="Icon ${idx + 1}">
                 <div class="remove-image" data-index="${idx}">×</div>
-                <p style="font-size: 11px; margin-top: 5px; color: #666;">icon ${idx + 1}</p>
+                <input type="number" class="icon-number" data-index="${idx}" value="${idx + 1}" min="1" max="99" placeholder="#">
             `;
             imgPrev.appendChild(prvItem);
         });
@@ -194,6 +215,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     fileIn.value = '';
                     prevBox.style.display = 'none';
                 }
+            });
+        });
+
+        document.querySelectorAll('.icon-number').forEach(inp => {
+            inp.addEventListener('change', function() {
+                const idx = parseInt(this.dataset.index);
+                let val = parseInt(this.value);
+                if (val < 1) val = 1;
+                if (val > 99) val = 99;
+                this.value = val;
+                procsdImgs[idx].customNum = val;
             });
         });
         
@@ -461,6 +493,11 @@ document.addEventListener('DOMContentLoaded', function() {
         for (let i = 0; i < procsdImgs.length; i++) {
             const blb = await (await fetch(procsdImgs[i].data)).blob();
             formData.append('iconImages[]', blb, `icon_${i}.png`);
+            formData.append('iconNumbers[]', procsdImgs[i].customNum || (i + 1));
+        }
+        
+        if (packIconIn.files[0]) {
+            formData.append('customPackIcon', packIconIn.files[0]);
         }
         
         formData.append('packName', document.getElementById('packName').value);
