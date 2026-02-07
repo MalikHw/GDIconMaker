@@ -18,6 +18,21 @@
     --text-light: #666;
 }
 
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary: #404040;
+        --primary-light: #606060;
+        --secondary: #202020;
+        --bg-light: #1a1a1a;
+        --bg-white: #252525;
+        --text-dark: #e0e0e0;
+        --text-light: #999;
+    }
+    body {
+        filter: brightness(0.8);
+    }
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-image: url('bg.png');
@@ -47,7 +62,7 @@ body {
         --text-light: #999;
     }
     body {
-        filter: brightness(0.8);
+        background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
     }
 }
 
@@ -503,6 +518,31 @@ input[type="file"] {
 
 .remove-pack-icon:hover {
     background: #c92a2a;
+}
+
+.ball-options {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.ball-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-dark);
+}
+
+.ball-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.ball-checkbox span {
+    user-select: none;
 }
 
 .crop-modal {
@@ -990,6 +1030,11 @@ input[type="file"] {
     .pack-icon-label {
         width: 100%;
         justify-content: center;
+    }
+    
+    .ball-options {
+        flex-direction: column;
+        gap: 10px;
     }
     
     .image-preview .icon-number {

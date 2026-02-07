@@ -55,6 +55,17 @@ document.addEventListener('DOMContentLoaded', function() {
         packIconImg.src = '';
     });
 
+    const noBallChk = document.getElementById('noBall');
+    const ballOnlyChk = document.getElementById('ballOnly');
+
+    noBallChk.addEventListener('change', function() {
+        if (this.checked) ballOnlyChk.checked = false;
+    });
+
+    ballOnlyChk.addEventListener('change', function() {
+        if (this.checked) noBallChk.checked = false;
+    });
+
     document.getElementById('tutorialToggle').addEventListener('click', function() {
         this.classList.toggle('active');
         document.getElementById('tutorialContent').classList.toggle('active');
@@ -499,6 +510,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (packIconIn.files[0]) {
             formData.append('customPackIcon', packIconIn.files[0]);
         }
+        
+        formData.append('noBall', noBallChk.checked ? 'true' : 'false');
+        formData.append('ballOnly', ballOnlyChk.checked ? 'true' : 'false');
         
         formData.append('packName', document.getElementById('packName').value);
         formData.append('packAuthor', document.getElementById('packAuthor').value);
