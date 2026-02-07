@@ -4,7 +4,7 @@
     <dict>
         <key>frames</key>
         <dict>
-            <key>player_ball_117_001.png</key>
+            <key>player_ball_01_001.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
@@ -19,7 +19,7 @@
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>player_ball_117_2_001.png</key>
+            <key>player_ball_01_2_001.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
@@ -34,7 +34,7 @@
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>player_ball_117_glow_001.png</key>
+            <key>player_ball_01_glow_001.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
@@ -59,13 +59,13 @@
             <key>premultiplyAlpha</key>
             <false/>
             <key>realTextureFileName</key>
-            <string>icons/player_ball_117-hd.png</string>
+            <string>icons/player_ball_01-hd.png</string>
             <key>size</key>
             <string>{201,80}</string>
             <key>smartupdate</key>
             <string>$TexturePacker:SmartUpdate:205f65a2fe2f92b588902e07e6012424:6a97aef3881b4bc3e1d72a666971e61a:31abc86cb1dd7b386db7fc92496dd5ca$</string>
             <key>textureFileName</key>
-            <string>icons/player_ball_117-hd.png</string>
+            <string>icons/player_ball_01-hd.png</string>
         </dict>
     </dict>
 </plist>
