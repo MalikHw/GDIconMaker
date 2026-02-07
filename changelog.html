@@ -1,185 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Changelog</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            color-scheme: light dark;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 15px;
-            background: transparent;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            body {
-                color: #e0e0e0;
-            }
-            .changelog-entry {
-                border-left-color: #505050 !important;
-            }
-            .changelog-date {
-                color: #999 !important;
-            }
-            code {
-                background: rgba(80, 80, 80, 0.3) !important;
-            }
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-        }
-
-        .error {
-            text-align: center;
-            padding: 20px;
-            color: #dc3545;
-        }
-
-        .changelog-entry {
-            margin-bottom: 20px;
-            padding-left: 15px;
-            border-left: 3px solid #667eea;
-        }
-
-        .changelog-date {
-            font-weight: 700;
-            color: #505050;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-
-        .changelog-content {
-            font-size: 13px;
-            color: inherit;
-        }
-
-        .changelog-content ul {
-            margin-left: 20px;
-            margin-top: 5px;
-        }
-
-        .changelog-content li {
-            margin-bottom: 3px;
-        }
-
-        .changelog-content code {
-            background: rgba(102, 126, 234, 0.1);
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 12px;
-        }
-
-        .changelog-content h2 {
-            font-size: 16px;
-            margin: 10px 0 5px 0;
-        }
-
-        .changelog-content h3 {
-            font-size: 14px;
-            margin: 8px 0 4px 0;
-        }
-
-        .changelog-content strong {
-            color: #667eea;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .changelog-content strong {
-                color: #8a9ff5;
-            }
-        }
+  			font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+		}
     </style>
-</head>
-<body>
-    <div id="changelog">
-        <div class="loading">
-            <p>loading changelog...</p>
-        </div>
-    </div>
-
-    <script>
-        const chlgDiv = document.getElementById('changelog');
-        const rawUrl = 'https://raw.githubusercontent.com/MalikHw/GDIconMaker/main/CHANGELOG.md';
-
-        fetch(rawUrl)
-            .then(r => {
-                if (!r.ok) throw new Error('cant fetch');
-                return r.text();
-            })
-            .then(md => {
-                parseChlg(md);
-            })
-            .catch(e => {
-                chlgDiv.innerHTML = '<div class="error"><p>couldn\'t load changelog :/</p></div>';
-            });
-
-        function parseChlg(md) {
-            const lns = md.split('\n');
-            let html = '';
-            let currEntry = null;
-            let currContent = '';
-
-            lns.forEach(ln => {
-                if (ln.startsWith('## ')) {
-                    if (currEntry) {
-                        html += `
-                            <div class="changelog-entry">
-                                <div class="changelog-date">${currEntry}</div>
-                                <div class="changelog-content">${currContent}</div>
-                            </div>
-                        `;
-                    }
-                    currEntry = ln.replace('## ', '').trim();
-                    currContent = '';
-                } else if (ln.trim() && currEntry) {
-                    currContent += parseMdLn(ln) + '\n';
-                }
-            });
-
-            if (currEntry) {
-                html += `
-                    <div class="changelog-entry">
-                        <div class="changelog-date">${currEntry}</div>
-                        <div class="changelog-content">${currContent}</div>
-                    </div>
-                `;
-            }
-
-            chlgDiv.innerHTML = html || '<div class="error"><p>no changelog found</p></div>';
-        }
-
-        function parseMdLn(ln) {
-            ln = ln.replace(/`([^`]+)`/g, '<code>$1</code>');
-            ln = ln.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-            ln = ln.replace(/^### (.+)/, '<h3>$1</h3>');
-            ln = ln.replace(/^## (.+)/, '<h2>$1</h2>');
-            
-            if (ln.trim().startsWith('- ')) {
-                if (!ln.match(/<ul>/)) {
-                    ln = '<ul>' + ln;
-                }
-                ln = ln.replace(/^- /, '<li>') + '</li>';
-            } else if (ln.trim() === '' && ln.match(/<\/li>/)) {
-                ln += '</ul>';
-            }
-            
-            return ln;
-        }
-    </script>
-</body>
+    <head>
+        <h4>7 FEBRUARY 2026</h4>
+        <h5>Features</h5>
+        <ol>
+            <li>Added manual cover upload</li>
+            <li>Added manual numbering input (like cube 68...)</li>
+        </ol>
+        <h5>Fixes</h5>
+        <ol>
+            <li>Annoying line on the left of UHD icon is fixed<li>
+        </ol>
+    </head>
 </html>
