@@ -14,7 +14,7 @@
     <meta name="share-text" content="Yo check out this free tool to make custom GD icons from any pic! No tutorials needed, just upload and download. Supports up to 99 images! gdiconmaker.rf.gd">
     <meta name="color-scheme" content="light dark">
     <link rel="icon" type="image/png" href="pack.png">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>">1
 </head>
 <body>
     <div class="stats-outside">
@@ -159,16 +159,15 @@
             <div class="crop-container">
                 <div class="crop-canvas-wrapper">
                     <canvas id="cropCanvas"></canvas>
-                </div>
-                <div class="crop-preview-wrapper">
-                    <h4>live preview:</h4>
-                    <canvas id="cropPreviewCanvas"></canvas>
                     <div class="crop-tip">
                         <strong>tip:</strong> drag to move, resize from corners, or press enter to confirm
                     </div>
                 </div>
             </div>
             <div class="crop-controls">
+                <button type="button" id="applyCropAll" class="crop-btn accent">
+                    <i class="nf nf-fa-copy"></i> apply to all
+                </button>
                 <button type="button" id="resetCrop" class="crop-btn reset">
                     <i class="nf nf-fa-refresh"></i> reset
                 </button>
@@ -182,6 +181,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
 </body>
 </html>

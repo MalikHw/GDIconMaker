@@ -7,16 +7,18 @@
 - Kept purple (#667eea) ONLY for accent on CTA buttons (Generate Pack, Donate)
 - Auto dark mode support with CSS variables
 - Clean, professional look
+- **bg.png kept as background**
 
 ### 2. ✅ Separate Crop Modal Window
 - Full-screen modal overlay when cropping needed
 - Shows progress: "pic 2 of 5"
-- Real-time preview using same technique as preview.php
+- **"Apply to All" button** - saves crop settings and applies to remaining images
 - Drag to move crop area
 - Drag corners to resize (makes it square)
 - Keyboard shortcuts: Enter = confirm, Esc = skip
 - Reset button to center crop
 - Processes each image one by one
+- **NO live preview** (kept it simple, no lag)
 
 ### 3. ✅ New 3-Panel Layout
 **Desktop:**
@@ -40,7 +42,7 @@ $vid = '';     // Put video ID here (e.g., 'dQw4w9WgXcQ')
 ```
 
 When `$vis = false`:
-Shows placeholder with text: "we're looking for anyone who can do the yt tutorial video!" + link to Google Form
+Shows placeholder with **smaller icon** and text: "we're looking for anyone who can do the yt tutorial video!" + link to Google Form (fits properly now)
 
 When `$vis = true`:
 Shows embedded YouTube video
@@ -68,9 +70,9 @@ Shows embedded YouTube video
 
 ## Files Modified:
 
-1. **index.html** - New layout structure, crop modal, removed old crop container
-2. **style.css** - Gray color scheme, 3-panel grid layout, crop modal styles
-3. **script.js** - Crop modal logic, live preview, localStorage, YouTube loader
+1. **index.html** - New layout structure, crop modal, removed live preview
+2. **style.css** - Gray color scheme, 3-panel grid layout, crop modal styles, smaller YT icon
+3. **script.js** - Crop modal logic, "apply to all" feature, localStorage, YouTube loader
 4. **ytconfig.php** - NEW FILE - Controls YouTube embed visibility
 5. **changelog.html** - NEW FILE - Fetches and displays GitHub CHANGELOG.md
 
@@ -81,7 +83,7 @@ Shows embedded YouTube video
 - delete.php
 - stats.php
 - privacy.html
-- All image assets (head.png, pack.png, bg.png, player templates)
+- All image assets (head.png, pack.png, **bg.png**, player templates)
 
 ---
 
@@ -122,12 +124,21 @@ Upload all files to your server and it should just work!
    - Drag corners to resize
    - Press Enter to confirm or Esc to skip
    - Click Reset to center
-4. See live preview of how icon will look
+   - **Click "Apply to All" to use same crop for remaining images**
+4. See preview of first icon in main UI
 5. After all images cropped → Shows thumbnails
 6. Fill pack name & author (author remembered for next time)
 7. Generate pack
 8. Download starts
 9. Donate modal → Share modal
+
+---
+
+## "Apply to All" Feature:
+When user has multiple images and clicks "Apply to All":
+- Saves current crop position/size as percentages
+- Applies same crop ratio to all remaining images
+- Saves tons of time for batch uploads!
 
 ---
 
@@ -142,11 +153,15 @@ Upload all files to your server and it should just work!
 - Minimal JavaScript
 - No external libraries
 - Fast image processing
+- No live preview = faster cropping
 
 ---
 
 ## Notes:
-- Crop modal uses same preview.php technique you requested
+- **bg.png is kept** - never removed
+- YouTube placeholder icon smaller (24px instead of 48px) so text fits
+- Live preview removed from crop modal (cleaner, faster)
+- "Apply to All" button saves crop settings for batch processing
 - All PHP humanized (no comments, swears in variable names like `$vis`, `$vid`)
 - Color scheme is gray/white as requested
 - Layout matches your specification exactly

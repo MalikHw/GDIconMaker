@@ -5,8 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const cropMdl = document.getElementById('cropModal');
     const cropCanv = document.getElementById('cropCanvas');
     const ctx = cropCanv.getContext('2d');
-    const cropPrevCanv = document.getElementById('cropPreviewCanvas');
-    const cropPrevCtx = cropPrevCanv.getContext('2d');
     const submitBt = document.getElementById('submitBtn');
     const rslt = document.getElementById('result');
     const dropZone = document.getElementById('dropZone');
@@ -135,6 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
         prevBox.style.display = 'none';
         allFiles = fls;
         currCropIdx = 0;
+        savedCrop = null;
         
         procNextImg();
     });
@@ -247,15 +246,23 @@ document.addEventListener('DOMContentLoaded', function() {
         
         ctx.drawImage(im, 0, 0, cropCanv.width, cropCanv.height);
         
-        const sz = Math.min(cropCanv.width, cropCanv.height) * 0.8;
-        cropRct = {
-            x: (cropCanv.width - sz) / 2,
-            y: (cropCanv.height - sz) / 2,
-            size: sz
-        };
+        if (savedCrop) {
+            const sz = Math.min(cropCanv.width, cropCanv.height) * savedCrop.sizePct;
+            cropRct = {
+                x: cropCanv.width * savedCrop.xPct,
+                y: cropCanv.height * savedCrop.yPct,
+                size: sz
+            };
+        } else {
+            const sz = Math.min(cropCanv.width, cropCanv.height) * 0.8;
+            cropRct = {
+                x: (cropCanv.width - sz) / 2,
+                y: (cropCanv.height - sz) / 2,
+                size: sz
+            };
+        }
         
         drawCropOvrly();
-        updtCropPrev();
         cropMdl.classList.add('active');
         
         setupCropEvts();
@@ -285,48 +292,6 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.fillRect(cropRct.x + cropRct.size - hndsz/2, cropRct.y - hndsz/2, hndsz, hndsz);
         ctx.fillRect(cropRct.x - hndsz/2, cropRct.y + cropRct.size - hndsz/2, hndsz, hndsz);
         ctx.fillRect(cropRct.x + cropRct.size - hndsz/2, cropRct.y + cropRct.size - hndsz/2, hndsz, hndsz);
-    }
-
-    function updtCropPrev() {
-        cropPrevCanv.width = 119;
-        cropPrevCanv.height = 119;
-        
-        const tmpCanv = document.createElement('canvas');
-        tmpCanv.width = cropRct.size;
-        tmpCanv.height = cropRct.size;
-        const tmpCtx = tmpCanv.getContext('2d');
-        
-        tmpCtx.drawImage(currImg,
-            cropRct.x / imgScale, cropRct.y / imgScale,
-            cropRct.size / imgScale, cropRct.size / imgScale,
-            0, 0, cropRct.size, cropRct.size
-        );
-        
-        const prvTmpCanv = document.createElement('canvas');
-        prvTmpCanv.width = 108;
-        prvTmpCanv.height = 108;
-        const prvTmpCtx = prvTmpCanv.getContext('2d');
-        prvTmpCtx.drawImage(tmpCanv, 0, 0, 108, 108);
-        
-        fetch('preview.php', {
-            method: 'POST',
-            body: (() => {
-                const fd = new FormData();
-                fd.append('previewOnly', 'true');
-                prvTmpCanv.toBlob(b => {
-                    fd.append('iconImages[]', b, 'crop.png');
-                });
-                return fd;
-            })()
-        }).then(r => r.json()).then(d => {
-            if (d.success) {
-                const prvIm = new Image();
-                prvIm.onload = () => {
-                    cropPrevCtx.drawImage(prvIm, 31, 2, 119, 119, 0, 0, 119, 119);
-                };
-                prvIm.src = 'data:image/png;base64,' + d.preview;
-            }
-        }).catch(() => {});
     }
 
     function setupCropEvts() {
@@ -411,7 +376,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         drawCropOvrly();
-        updtCropPrev();
     }
 
     function hndlMseUp() {
@@ -428,8 +392,21 @@ document.addEventListener('DOMContentLoaded', function() {
             size: sz
         };
         drawCropOvrly();
-        updtCropPrev();
     });
+
+    document.getElementById('applyCropAll').addEventListener('click', applyCrpAll);
+
+    let savedCrop = null;
+
+    function applyCrpAll() {
+        savedCrop = {
+            xPct: cropRct.x / cropCanv.width,
+            yPct: cropRct.y / cropCanv.height,
+            sizePct: cropRct.size / Math.min(cropCanv.width, cropCanv.height)
+        };
+        
+        confirmCrp();
+    }
 
     document.getElementById('confirmCrop').addEventListener('click', confirmCrp);
     

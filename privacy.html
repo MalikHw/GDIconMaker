@@ -8,6 +8,14 @@
     <link rel="icon" type="image/png" href="pack.png">
     <link rel="stylesheet" href="style.css">
     <style>
+        body {
+            /* Background changed to bg.png with a dark gray fallback */
+            background: #1a1a1a url('bg.png') repeat;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
         .privacy-container {
             max-width: 800px;
             margin: 0 auto;
@@ -15,22 +23,27 @@
         }
         
         .privacy-content {
-            background: white;
+            background: #ffffff;
             padding: 40px;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            /* Softened shadow for the gray theme */
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
         }
         
         .privacy-content h1 {
-            color: #667eea;
+            /* Dark Gray / Charcoal */
+            color: #2d2d2d; 
             margin-bottom: 10px;
         }
         
         .privacy-content h2 {
-            color: #764ba2;
+            /* Medium Gray */
+            color: #4a4a4a;
             margin-top: 30px;
             margin-bottom: 15px;
             font-size: 1.5em;
+            border-bottom: 2px solid #eeeeee;
+            padding-bottom: 5px;
         }
         
         .privacy-content p, .privacy-content li {
@@ -47,7 +60,8 @@
             display: inline-block;
             margin-top: 20px;
             padding: 12px 24px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            /* Gradient changed to Gray tones */
+            background: linear-gradient(135deg, #4a4a4a, #2d2d2d);
             color: white;
             text-decoration: none;
             border-radius: 10px;
@@ -57,15 +71,29 @@
         
         .back-link:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            /* Gray shadow on hover */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #5a5a5a, #3d3d3d);
         }
         
         .highlight {
-            background: #fff3cd;
+            /* Changed from yellow to a neutral light gray callout */
+            background: #f8f9fa;
             padding: 20px;
-            border-left: 4px solid #ffc107;
+            border-left: 4px solid #4a4a4a;
             border-radius: 5px;
             margin: 20px 0;
+            color: #333;
+        }
+
+        a {
+            /* Links styled in a neutral dark gray/blue-gray */
+            color: #4a4a4a;
+            text-decoration: underline;
+        }
+
+        a:hover {
+            color: #000;
         }
     </style>
 </head>
@@ -124,7 +152,7 @@
             
             <h2>Open Source</h2>
             <p>This tool is open source! You can view the entire codebase on GitHub:</p>
-            <p><a href="https://github.com/MalikHw/GDIconMaker" target="_blank" style="color: #667eea;">github.com/MalikHw/GDIconMaker</a></p>
+            <p><a href="https://github.com/MalikHw/GDIconMaker" target="_blank">github.com/MalikHw/GDIconMaker</a></p>
             
             <h2>Your Rights</h2>
             <p>Since we don't collect or store personal data, there's nothing to request, delete, or export. You're free to use the tool anonymously.</p>
@@ -135,8 +163,8 @@
             <h2>Contact</h2>
             <p>Questions? Reach out via:</p>
             <ul>
-                <li>GitHub: <a href="https://github.com/MalikHw" target="_blank" style="color: #667eea;">@MalikHw</a></li>
-                <li>YouTube: <a href="https://youtube.com/@MalikHw47" target="_blank" style="color: #667eea;">@MalikHw47</a></li>
+                <li>GitHub: <a href="https://github.com/MalikHw" target="_blank">@MalikHw</a></li>
+                <li>YouTube: <a href="https://youtube.com/@MalikHw47" target="_blank">@MalikHw47</a></li>
             </ul>
             
             <a href="index.html" class="back-link">← Back to Icon Maker</a>
