@@ -149,8 +149,8 @@ document.addEventListener('DOMContentLoaded', function() {
     fileIn.addEventListener('change', function(e) {
         const fls = Array.from(e.target.files);
         
-        if (fls.length > 99) {
-            alert('max 99 pics bro');
+        if (fls.length > 400) {
+            alert('max 400 pics bro');
             fileIn.value = '';
             return;
         }
@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function() {
             prvItem.innerHTML = `
                 <img src="${im.data}" alt="Icon ${idx + 1}">
                 <div class="remove-image" data-index="${idx}">×</div>
-                <input type="number" class="icon-number" data-index="${idx}" value="${idx + 1}" min="1" max="99" placeholder="#">
+                <input type="number" class="icon-number" data-index="${idx}" value="${idx + 1}" min="1" max="400" placeholder="#">
             `;
             imgPrev.appendChild(prvItem);
         });
@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const idx = parseInt(this.dataset.index);
                 let val = parseInt(this.value);
                 if (val < 1) val = 1;
-                if (val > 99) val = 99;
+                if (val > 400) val = 400;
                 this.value = val;
                 procsdImgs[idx].customNum = val;
             });

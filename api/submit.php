@@ -106,8 +106,13 @@ try {
         imagedestroy($reszUhd);
         imagedestroy($uhdBase);
 
-        copy('../player_01-hd.plist', $icnsDir . "/player_{$idxStr}-hd.plist");
-        copy('../player_01-uhd.plist', $icnsDir . "/player_{$idxStr}-uhd.plist");
+        $hdPlist = file_get_contents('../player_01-hd.plist');
+        $hdPlist = str_replace('player_01', 'player_' . $idxStr, $hdPlist);
+        file_put_contents($icnsDir . "/player_{$idxStr}-hd.plist", $hdPlist);
+        
+        $uhdPlist = file_get_contents('../player_01-uhd.plist');
+        $uhdPlist = str_replace('player_01', 'player_' . $idxStr, $uhdPlist);
+        file_put_contents($icnsDir . "/player_{$idxStr}-uhd.plist", $uhdPlist);
     }
     
     if (!$noBall) {
@@ -185,8 +190,16 @@ try {
         imagedestroy($ballUhdCirc);
         imagedestroy($ballUhdBase);
 
-        copy('../player_ball_01-hd.plist', $icnsDir . "/player_ball_{$idxStr}-hd.plist");
-        copy('../player_ball_01-uhd.plist', $icnsDir . "/player_ball_{$idxStr}-uhd.plist");
+        if (file_exists('../player_ball_01-hd.plist')) {
+            $ballHdPlist = file_get_contents('../player_ball_01-hd.plist');
+            $ballHdPlist = str_replace('player_ball_01', 'player_ball_' . $idxStr, $ballHdPlist);
+            file_put_contents($icnsDir . "/player_ball_{$idxStr}-hd.plist", $ballHdPlist);
+        }
+        if (file_exists('../player_ball_01-uhd.plist')) {
+            $ballUhdPlist = file_get_contents('../player_ball_01-uhd.plist');
+            $ballUhdPlist = str_replace('player_ball_01', 'player_ball_' . $idxStr, $ballUhdPlist);
+            file_put_contents($icnsDir . "/player_ball_{$idxStr}-uhd.plist", $ballUhdPlist);
+        }
     }
 
     $pckJsonCont = file_get_contents('../pack.json');

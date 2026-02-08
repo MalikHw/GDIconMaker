@@ -41,8 +41,8 @@ $pckId = 'gdiconmaker.' . preg_replace('/[^a-zA-Z0-9]/', '', str_replace(' ', ''
 $upldFiles = $_FILES['iconImages'];
 $fileCnt = is_array($upldFiles['tmp_name']) ? count($upldFiles['tmp_name']) : 1;
 
-if ($fileCnt > 99) {
-    sendError('Maximum 99 images allowed');
+if ($fileCnt > 400) {
+    sendError('Maximum 400 images allowed');
 }
 
 $custPackIcon = isset($_FILES['customPackIcon']) && $_FILES['customPackIcon']['error'] === UPLOAD_ERR_OK;
@@ -62,7 +62,7 @@ try {
         $iconIdx = isset($iconNums[$i]) ? intval($iconNums[$i]) : ($i + 1);
         
         if ($iconIdx < 1) $iconIdx = 1;
-        if ($iconIdx > 99) $iconIdx = 99;
+        if ($iconIdx > 400) $iconIdx = 400;
         
         if (is_array($upldFiles['tmp_name'])) {
             $tmpName = $upldFiles['tmp_name'][$i];
@@ -139,8 +139,13 @@ try {
             imagedestroy($reszUhd);
             imagedestroy($uhdBase);
 
-            copy('player_01-hd.plist', $icnsDir . "/player_{$idxStr}-hd.plist");
-            copy('player_01-uhd.plist', $icnsDir . "/player_{$idxStr}-uhd.plist");
+            $hdPlist = file_get_contents('player_01-hd.plist');
+            $hdPlist = str_replace('player_01', 'player_' . $idxStr, $hdPlist);
+            file_put_contents($icnsDir . "/player_{$idxStr}-hd.plist", $hdPlist);
+            
+            $uhdPlist = file_get_contents('player_01-uhd.plist');
+            $uhdPlist = str_replace('player_01', 'player_' . $idxStr, $uhdPlist);
+            file_put_contents($icnsDir . "/player_{$idxStr}-uhd.plist", $uhdPlist);
         }
         
         if (!$noBall) {
@@ -215,15 +220,23 @@ try {
                 }
             }
             
-            imagecopy($ballUhdBase, $ballUhdCirc, 161, 8, 0, 0, 130, 130);
+            imagecopy($ballUhdBase, $ballUhdCirc, 162, 8, 0, 0, 130, 130);
             imagepng($ballUhdBase, $icnsDir . "/player_ball_{$idxStr}-uhd.png");
             
             imagedestroy($ballUhd);
             imagedestroy($ballUhdCirc);
             imagedestroy($ballUhdBase);
 
-            copy('player_ball_01-hd.plist', $icnsDir . "/player_ball_{$idxStr}-hd.plist");
-            copy('player_ball_01-uhd.plist', $icnsDir . "/player_ball_{$idxStr}-uhd.plist");
+            if (file_exists('player_ball_01-hd.plist')) {
+                $ballHdPlist = file_get_contents('player_ball_01-hd.plist');
+                $ballHdPlist = str_replace('player_ball_01', 'player_ball_' . $idxStr, $ballHdPlist);
+                file_put_contents($icnsDir . "/player_ball_{$idxStr}-hd.plist", $ballHdPlist);
+            }
+            if (file_exists('player_ball_01-uhd.plist')) {
+                $ballUhdPlist = file_get_contents('player_ball_01-uhd.plist');
+                $ballUhdPlist = str_replace('player_ball_01', 'player_ball_' . $idxStr, $ballUhdPlist);
+                file_put_contents($icnsDir . "/player_ball_{$idxStr}-uhd.plist", $ballUhdPlist);
+            }
         }
 
         imagedestroy($usrImg);
