@@ -49,7 +49,7 @@ $dy = (int)$dt->format('j');
 
         <div class="main-container">
             <h1><img src="head.png" alt="GD Custom Icons Maker" class="logo"></h1>
-            <p class="subtitle">make ur custom gd icon pack</p>
+            <p class="subtitle">(make ur custom gd icon pack) DONT USE RIGHT NOW - ITS BROKEN</p>
             
             <div class="tutorial-dropdown">
                 <button type="button" class="tutorial-toggle" id="tutorialToggle">
@@ -111,7 +111,7 @@ $dy = (int)$dt->format('j');
                 <div class="upload-section">
                     <div class="upload-label" id="dropZone">
                         <span class="upload-icon"><i class="nf nf-fa-folder_open"></i></span>
-                        <span>drop ur pics here or click (max 400 pics, 5MB each)</span>
+                        <span>drop ur pics here or click (max 400 pics, 5MB each) -  DONT USE RIGHT NOW - ITS BROKEN</span>
                         <input type="file" id="iconImage" name="iconImage[]" accept="image/*,image/gif" multiple required>
                     </div>
                     
@@ -147,12 +147,30 @@ $dy = (int)$dt->format('j');
                         </label>
                         <label class="ball-checkbox">
                             <input type="checkbox" id="doWave" name="doWave" checked>
-                            <span>wave (broken, may fixed over time)</span>
+                            <span>wave</span>
                         </label>
                         <label class="ball-checkbox">
                             <input type="checkbox" id="doBall" name="doBall" checked>
                             <span>ball</span>
                         </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="p1Color"><i class="nf nf-fa-paint_brush"></i> P1 color (cube/ball):</label>
+                    <div class="color-input-group">
+                        <input type="color" id="p1ColorPicker" value="#FFFFFF">
+                        <input type="text" id="p1Color" name="p1Color" placeholder="#FFFFFF" maxlength="7">
+                        <span class="color-hint">icons will be inverted to opposite of this</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="p2Color"><i class="nf nf-fa-paint_brush"></i> P2 color (wave):</label>
+                    <div class="color-input-group">
+                        <input type="color" id="p2ColorPicker" value="#FFFFFF">
+                        <input type="text" id="p2Color" name="p2Color" placeholder="#FFFFFF" maxlength="7">
+                        <span class="color-hint">icons will be inverted to opposite of this</span>
                     </div>
                 </div>
 

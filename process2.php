@@ -1,6 +1,38 @@
 <?php
 
-function procCube($usrImg, $w, $h, $idxStr, $icnsDir) {
+function invertColorImg($img, $targetHex) {
+    $targetRgb = hexToRgb($targetHex);
+    $invR = 255 - $targetRgb['r'];
+    $invG = 255 - $targetRgb['g'];
+    $invB = 255 - $targetRgb['b'];
+    
+    $w = imagesx($img);
+    $h = imagesy($img);
+    
+    for($y = 0; $y < $h; $y++) {
+        for($x = 0; $x < $w; $x++) {
+            $rgb = imagecolorat($img, $x, $y);
+            $a = ($rgb >> 24) & 0xFF;
+            
+            if($a < 127) {
+                imagesetpixel($img, $x, $y, imagecolorallocatealpha($img, $invR, $invG, $invB, $a));
+            }
+        }
+    }
+    
+    return $img;
+}
+
+function hexToRgb($hex) {
+    $hex = ltrim($hex, '#');
+    return [
+        'r' => hexdec(substr($hex, 0, 2)),
+        'g' => hexdec(substr($hex, 2, 2)),
+        'b' => hexdec(substr($hex, 4, 2))
+    ];
+}
+
+function procCube($usrImg, $w, $h, $idxStr, $icnsDir, $p1Color = null) {
     $hdBase = imagecreatefrompng('player_01-hd.png');
     if($hdBase === false) throw new Exception('HD template missing');
     
@@ -13,6 +45,10 @@ function procCube($usrImg, $w, $h, $idxStr, $icnsDir) {
     $transp = imagecolorallocatealpha($reszHd, 0, 0, 0, 127);
     imagefill($reszHd, 0, 0, $transp);
     imagecopyresampled($reszHd, $usrImg, 0, 0, 0, 0, 55, 56, $w, $h);
+    
+    if($p1Color) {
+        $reszHd = invertColorImg($reszHd, $p1Color);
+    }
 
     $rotHd = imagerotate($reszHd, -90, imagecolorallocatealpha($reszHd, 0, 0, 0, 127));
     imagealphablending($rotHd, false);
@@ -37,6 +73,10 @@ function procCube($usrImg, $w, $h, $idxStr, $icnsDir) {
     $transp = imagecolorallocatealpha($reszUhd, 0, 0, 0, 127);
     imagefill($reszUhd, 0, 0, $transp);
     imagecopyresampled($reszUhd, $usrImg, 0, 0, 0, 0, 108, 108, $w, $h);
+    
+    if($p1Color) {
+        $reszUhd = invertColorImg($reszUhd, $p1Color);
+    }
 
     imagecopy($uhdBase, $reszUhd, 37, 8, 0, 0, 108, 108);
     imagepng($uhdBase, $icnsDir . "/player_{$idxStr}-uhd.png");
@@ -53,38 +93,42 @@ function procCube($usrImg, $w, $h, $idxStr, $icnsDir) {
     file_put_contents($icnsDir . "/player_{$idxStr}-uhd.plist", $uhdPlist);
 }
 
-function procWave($usrImg, $w, $h, $idxStr, $icnsDir) {
+function procWave($usrImg, $w, $h, $idxStr, $icnsDir, $p2Color = null) {
     $hdBase = imagecreatefrompng('dart_01-hd.png');
     if($hdBase === false) throw new Exception('Wave HD template missing');
     
     imagealphablending($hdBase, true);
     imagesavealpha($hdBase, true);
 
-    $waveHd = imagecreatetruecolor(25, 27);
+    $waveHd = imagecreatetruecolor(24, 25);
     imagealphablending($waveHd, false);
     imagesavealpha($waveHd, true);
     $transp = imagecolorallocatealpha($waveHd, 0, 0, 0, 127);
     imagefill($waveHd, 0, 0, $transp);
-    imagecopyresampled($waveHd, $usrImg, 0, 0, 0, 0, 25, 27, $w, $h);
+    imagecopyresampled($waveHd, $usrImg, 0, 0, 0, 0, 24, 25, $w, $h);
     
-    $waveHdCirc = imagecreatetruecolor(25, 27);
+    if($p2Color) {
+        $waveHd = invertColorImg($waveHd, $p2Color);
+    }
+    
+    $waveHdCirc = imagecreatetruecolor(24, 25);
     imagealphablending($waveHdCirc, false);
     imagesavealpha($waveHdCirc, true);
     imagefill($waveHdCirc, 0, 0, $transp);
     
-    for($y = 0; $y < 27; $y++) {
-        for($x = 0; $x < 25; $x++) {
-            $dx = $x - 12.5;
-            $dy = $y - 13.5;
+    for($y = 0; $y < 25; $y++) {
+        for($x = 0; $x < 24; $x++) {
+            $dx = $x - 12;
+            $dy = $y - 12.5;
             $dist = sqrt($dx*$dx + $dy*$dy);
-            if($dist <= 13) {
+            if($dist <= 12.5) {
                 $clr = imagecolorat($waveHd, $x, $y);
                 imagesetpixel($waveHdCirc, $x, $y, $clr);
             }
         }
     }
     
-    imagecopy($hdBase, $waveHdCirc, 12, 62, 0, 0, 25, 27);
+    imagecopy($hdBase, $waveHdCirc, 3, 102, 0, 0, 24, 25);
     imagepng($hdBase, $icnsDir . "/dart_{$idxStr}-hd.png");
     
     imagedestroy($waveHd);
@@ -97,31 +141,35 @@ function procWave($usrImg, $w, $h, $idxStr, $icnsDir) {
     imagealphablending($uhdBase, true);
     imagesavealpha($uhdBase, true);
 
-    $waveUhd = imagecreatetruecolor(49, 54);
+    $waveUhd = imagecreatetruecolor(48, 53);
     imagealphablending($waveUhd, false);
     imagesavealpha($waveUhd, true);
     $transp = imagecolorallocatealpha($waveUhd, 0, 0, 0, 127);
     imagefill($waveUhd, 0, 0, $transp);
-    imagecopyresampled($waveUhd, $usrImg, 0, 0, 0, 0, 49, 54, $w, $h);
+    imagecopyresampled($waveUhd, $usrImg, 0, 0, 0, 0, 48, 53, $w, $h);
     
-    $waveUhdCirc = imagecreatetruecolor(49, 54);
+    if($p2Color) {
+        $waveUhd = invertColorImg($waveUhd, $p2Color);
+    }
+    
+    $waveUhdCirc = imagecreatetruecolor(48, 53);
     imagealphablending($waveUhdCirc, false);
     imagesavealpha($waveUhdCirc, true);
     imagefill($waveUhdCirc, 0, 0, $transp);
     
-    for($y = 0; $y < 54; $y++) {
-        for($x = 0; $x < 49; $x++) {
-            $dx = $x - 24.5;
-            $dy = $y - 27;
+    for($y = 0; $y < 53; $y++) {
+        for($x = 0; $x < 48; $x++) {
+            $dx = $x - 24;
+            $dy = $y - 26.5;
             $dist = sqrt($dx*$dx + $dy*$dy);
-            if($dist <= 25) {
+            if($dist <= 26.5) {
                 $clr = imagecolorat($waveUhd, $x, $y);
                 imagesetpixel($waveUhdCirc, $x, $y, $clr);
             }
         }
     }
     
-    imagecopy($uhdBase, $waveUhdCirc, 21, 120, 0, 0, 49, 54);
+    imagecopy($uhdBase, $waveUhdCirc, 4, 197, 0, 0, 48, 53);
     imagepng($uhdBase, $icnsDir . "/dart_{$idxStr}-uhd.png");
     
     imagedestroy($waveUhd);
@@ -140,7 +188,7 @@ function procWave($usrImg, $w, $h, $idxStr, $icnsDir) {
     }
 }
 
-function procBall($usrImg, $w, $h, $idxStr, $icnsDir) {
+function procBall($usrImg, $w, $h, $idxStr, $icnsDir, $p1Color = null) {
     $ballHdBase = imagecreatefrompng('player_ball_01-hd.png');
     if($ballHdBase === false) throw new Exception('Ball HD template missing');
     
@@ -153,6 +201,10 @@ function procBall($usrImg, $w, $h, $idxStr, $icnsDir) {
     $transp = imagecolorallocatealpha($ballHd, 0, 0, 0, 127);
     imagefill($ballHd, 0, 0, $transp);
     imagecopyresampled($ballHd, $usrImg, 0, 0, 0, 0, 65, 66, $w, $h);
+    
+    if($p1Color) {
+        $ballHd = invertColorImg($ballHd, $p1Color);
+    }
     
     $ballHdCirc = imagecreatetruecolor(65, 66);
     imagealphablending($ballHdCirc, false);
@@ -190,6 +242,10 @@ function procBall($usrImg, $w, $h, $idxStr, $icnsDir) {
     $transp = imagecolorallocatealpha($ballUhd, 0, 0, 0, 127);
     imagefill($ballUhd, 0, 0, $transp);
     imagecopyresampled($ballUhd, $usrImg, 0, 0, 0, 0, 130, 130, $w, $h);
+    
+    if($p1Color) {
+        $ballUhd = invertColorImg($ballUhd, $p1Color);
+    }
     
     $ballUhdCirc = imagecreatetruecolor(130, 130);
     imagealphablending($ballUhdCirc, false);

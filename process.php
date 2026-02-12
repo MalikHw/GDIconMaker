@@ -20,53 +20,8 @@ function sendSuccess($msg, $dlUrl, $fname) {
     exit;
 }
 
-function checkRateLimit() {
-    $ip = $_SERVER['REMOTE_ADDR'];
-    $cookie = isset($_COOKIE['zip_limit']) ? $_COOKIE['zip_limit'] : '';
-    
-    $today = date('Y-m-d');
-    $limitFile = 'rate_limits.json';
-    
-    if(file_exists($limitFile)) {
-        $limits = json_decode(file_get_contents($limitFile), true);
-    } else {
-        $limits = [];
-    }
-    
-    if(!isset($limits[$today])) {
-        $limits = [$today => []];
-    } else {
-        $limits = [$today => $limits[$today]];
-    }
-    
-    $ipCount = isset($limits[$today][$ip]) ? $limits[$today][$ip] : 0;
-    $cookieCount = $cookie ? (isset($limits[$today][$cookie]) ? $limits[$today][$cookie] : 0) : 0;
-    
-    $maxCount = max($ipCount, $cookieCount);
-    
-    if($maxCount >= 10) {
-        return false;
-    }
-    
-    if(!$cookie) {
-        $cookie = uniqid('zip_', true);
-        setcookie('zip_limit', $cookie, time() + 86400, '/');
-    }
-    
-    $limits[$today][$ip] = $ipCount + 1;
-    $limits[$today][$cookie] = $cookieCount + 1;
-    
-    file_put_contents($limitFile, json_encode($limits));
-    
-    return true;
-}
-
 if($_SERVER['REQUEST_METHOD'] !== 'POST') {
     fckOff('Invalid request method');
-}
-
-if(!checkRateLimit()) {
-    fckOff('Rate limit exceeded: 10 packs per day max, try again tomorrow bro');
 }
 
 if(!isset($_FILES['iconImages']) || !isset($_POST['packName']) || !isset($_POST['packAuthor'])) {
@@ -81,6 +36,8 @@ $gifFpsVals = isset($_POST['gifFps']) ? $_POST['gifFps'] : [];
 $doCube = isset($_POST['doCube']) && $_POST['doCube'] === 'true';
 $doWave = isset($_POST['doWave']) && $_POST['doWave'] === 'true';
 $doBall = isset($_POST['doBall']) && $_POST['doBall'] === 'true';
+$p1Color = isset($_POST['p1Color']) && !empty($_POST['p1Color']) ? $_POST['p1Color'] : null;
+$p2Color = isset($_POST['p2Color']) && !empty($_POST['p2Color']) ? $_POST['p2Color'] : null;
 
 if(empty($pckName) || empty($pckAuth)) {
     fckOff('All fields are required');
@@ -157,15 +114,15 @@ try {
         $idxStr = str_pad($iconIdx, 2, '0', STR_PAD_LEFT);
 
         if($doCube) {
-            procCube($usrImg, $w, $h, $idxStr, $icnsDir);
+            procCube($usrImg, $w, $h, $idxStr, $icnsDir, $p1Color);
         }
         
         if($doWave) {
-            procWave($usrImg, $w, $h, $idxStr, $icnsDir);
+            procWave($usrImg, $w, $h, $idxStr, $icnsDir, $p2Color);
         }
         
         if($doBall) {
-            procBall($usrImg, $w, $h, $idxStr, $icnsDir);
+            procBall($usrImg, $w, $h, $idxStr, $icnsDir, $p1Color);
         }
 
         imagedestroy($usrImg);

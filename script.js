@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     setupGamemodeChks();
+    setupColorInputs();
     checkIfMobile();
     checkZipLimit();
 
@@ -640,6 +641,15 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('doCube', document.getElementById('doCube').checked ? 'true' : 'false');
         formData.append('doWave', document.getElementById('doWave').checked ? 'true' : 'false');
         formData.append('doBall', document.getElementById('doBall').checked ? 'true' : 'false');
+        
+        const p1Col = document.getElementById('p1Color').value;
+        const p2Col = document.getElementById('p2Color').value;
+        if(p1Col && /^#[0-9A-F]{6}$/i.test(p1Col)) {
+            formData.append('p1Color', p1Col);
+        }
+        if(p2Col && /^#[0-9A-F]{6}$/i.test(p2Col)) {
+            formData.append('p2Color', p2Col);
+        }
         
         formData.append('packName', document.getElementById('packName').value);
         formData.append('packAuthor', document.getElementById('packAuthor').value);
