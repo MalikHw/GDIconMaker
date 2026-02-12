@@ -1,0 +1,73 @@
+name: Sync from VPS
+
+on:
+  # Manual trigger via workflow dispatch
+  workflow_dispatch:
+  
+  # Automatic trigger every 12 hours
+  schedule:
+    - cron: '0 */12 * * *'  # Runs at 00:00 and 12:00 UTC every day
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for proper commits
+      
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+      
+      - name: Sync files from VPS via FTP
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASS }}
+          FTP_PORT: ${{ secrets.FTP_PORT }}
+        run: |
+          # Create sync directory
+          mkdir -p ./synced
+          
+          # Download all files from VPS using lftp
+          lftp -c "
+            set ftp:ssl-allow no;
+            set ftp:passive-mode on;
+            set net:max-retries 2;
+            set net:timeout 10;
+            open -u $FTP_USER,$FTP_PASS -p $FTP_PORT $FTP_HOST;
+            mirror --verbose --exclude downloads/ --exclude temp_* --exclude .git/ --exclude .github/ --exclude stats.json --continue --ignore-time htdocs ./synced;
+            bye
+          " || true
+      
+      - name: Copy synced files to repository root
+        run: |
+          # Copy all files except .git directory
+          rsync -av --exclude='.git' --exclude='.github' --exclude="*.json" ./synced/ ./
+          rm -rf ./synced
+      
+      - name: Check for changes
+        id: check_changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          
+          # Check if there are any changes
+          if git diff --staged --quiet; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          git commit -m "Auto-sync from VPS - $(date +'%Y-%m-%d %H:%M:%S UTC')"
+          git push
+      
+      - name: No changes detected
+        if: steps.check_changes.outputs.changes == 'false'
+        run: echo "No changes detected - repository is up to date"
