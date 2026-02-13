@@ -48,18 +48,21 @@ jobs:
           rsync -av --exclude='.git' --exclude='.github' --exclude="*.json" ./synced/ ./
           rm -rf ./synced
       
-      - name: Replace secrets with fake ones
+      - name: Replace real secrets with fake ones
+        env:
+          REAL_SECRET: ${{ secrets.REAL_SECRET }}
         run: |
-          # Replace cleanup secret in cleanup.php
+          # Replace real secret with fake one in cleanup.php
           if [ -f "cleanup.php" ]; then
-            sed -i "s/define('CLEANUP_SECRET', 'gd1c0nm4k3r_cl34nup_s3cr3t_' \. md5(__DIR__));/define('CLEANUP_SECRET', 'MIKUMIKUMIKUMIKU');/g" cleanup.php
+            sed -i "s/${REAL_SECRET}/MIKUMIKUMIKUMIKU/g" cleanup.php
           fi
           
-          # Replace cleanup token in process.php
+          # Replace real secret with fake one in process.php
           if [ -f "process.php" ]; then
-            sed -i "s/\$cleanupToken = 'gd1c0nm4k3r_cl34nup_s3cr3t_' \. md5(__DIR__);/\$cleanupToken = 'MIKUMIKUMIKUMIKU';/g" process.php
+            sed -i "s/${REAL_SECRET}/MIKUMIKUMIKUMIKU/g" process.php
           fi
           
+          echo "🔒 All secrets replaced with fake ones for public repo"
       
       - name: Check for changes
         id: check_changes
