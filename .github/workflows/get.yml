@@ -48,6 +48,19 @@ jobs:
           rsync -av --exclude='.git' --exclude='.github' --exclude="*.json" ./synced/ ./
           rm -rf ./synced
       
+      - name: Replace secrets with fake ones
+        run: |
+          # Replace cleanup secret in cleanup.php
+          if [ -f "cleanup.php" ]; then
+            sed -i "s/define('CLEANUP_SECRET', 'gd1c0nm4k3r_cl34nup_s3cr3t_' \. md5(__DIR__));/define('CLEANUP_SECRET', 'MIKUMIKUMIKUMIKU');/g" cleanup.php
+          fi
+          
+          # Replace cleanup token in process.php
+          if [ -f "process.php" ]; then
+            sed -i "s/\$cleanupToken = 'gd1c0nm4k3r_cl34nup_s3cr3t_' \. md5(__DIR__);/\$cleanupToken = 'MIKUMIKUMIKUMIKU';/g" process.php
+          fi
+          
+      
       - name: Check for changes
         id: check_changes
         run: |
