@@ -49,7 +49,7 @@ $dy = (int)$dt->format('j');
 
         <div class="main-container">
             <h1><img src="head.png" alt="GD Custom Icons Maker" class="logo"></h1>
-            <p class="subtitle">(make ur custom gd icon pack) DONT USE RIGHT NOW - ITS BROKEN</p>
+            <p class="subtitle">(make ur custom gd icon pack)</p>
             
             <div class="tutorial-dropdown">
                 <button type="button" class="tutorial-toggle" id="tutorialToggle">
@@ -111,7 +111,7 @@ $dy = (int)$dt->format('j');
                 <div class="upload-section">
                     <div class="upload-label" id="dropZone">
                         <span class="upload-icon"><i class="nf nf-fa-folder_open"></i></span>
-                        <span>drop ur pics here or click (max 400 pics, 5MB each) -  DONT USE RIGHT NOW - ITS BROKEN</span>
+                        <span>drop ur pics here or click (max 400 pics, 5MB each)</span>
                         <input type="file" id="iconImage" name="iconImage[]" accept="image/*,image/gif" multiple required>
                     </div>
                     
@@ -161,7 +161,7 @@ $dy = (int)$dt->format('j');
                     <div class="color-input-group">
                         <input type="color" id="p1ColorPicker" value="#FFFFFF">
                         <input type="text" id="p1Color" name="p1Color" placeholder="#FFFFFF" maxlength="7">
-                        <span class="color-hint">icons will be inverted to opposite of this</span>
+                        <span class="color-hint">icons will be hue-shifted from this color ( DONT USE RIGHT NOW - ITS BROKEN)</span>
                     </div>
                 </div>
 
@@ -170,7 +170,7 @@ $dy = (int)$dt->format('j');
                     <div class="color-input-group">
                         <input type="color" id="p2ColorPicker" value="#FFFFFF">
                         <input type="text" id="p2Color" name="p2Color" placeholder="#FFFFFF" maxlength="7">
-                        <span class="color-hint">icons will be inverted to opposite of this</span>
+                        <span class="color-hint">icons will be hue-shifted from this color ( DONT USE RIGHT NOW - ITS BROKEn)</span>
                     </div>
                 </div>
 
@@ -219,6 +219,9 @@ $dy = (int)$dt->format('j');
                         <i class="nf nf-fa-lock"></i> privacy
                     </a>
                 </div>
+                <p style="font-size: 12px; color: var(--text-light); margin-top: 15px;">
+                    licensed under <a href="https://www.mozilla.org/en-US/MPL/2.0/" target="_blank" style="color: var(--accent);">MPL 2.0</a>
+                </p>
             </footer>
         </div>
 

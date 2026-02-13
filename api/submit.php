@@ -3,6 +3,8 @@ header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 
+require_once 'process2.php';
+
 function fckOff($msg) {
     echo json_encode(['success' => false, 'error' => $msg]);
     exit;
@@ -21,6 +23,12 @@ $nm = trim($_POST['name']);
 $auth = trim($_POST['author']);
 $noBall = isset($_POST['noBall']) && $_POST['noBall'] === 'true';
 $ballOnly = isset($_POST['ballOnly']) && $_POST['ballOnly'] === 'true';
+$noWave = isset($_POST['noWave']) && $_POST['noWave'] === 'true';
+$waveOnly = isset($_POST['waveOnly']) && $_POST['waveOnly'] === 'true';
+$noCube = isset($_POST['noCube']) && $_POST['noCube'] === 'true';
+$cubeOnly = isset($_POST['cubeOnly']) && $_POST['cubeOnly'] === 'true';
+$p1Color = isset($_POST['p1Color']) && !empty($_POST['p1Color']) ? $_POST['p1Color'] : null;
+$p2Color = isset($_POST['p2Color']) && !empty($_POST['p2Color']) ? $_POST['p2Color'] : null;
 
 if (empty($nm) || empty($auth)) {
     fckOff('Name and author cant be empty');
@@ -62,144 +70,24 @@ if (!mkdir($icnsDir, 0755, true)) {
 try {
     $idxStr = '01';
     
-    if (!$ballOnly) {
-        $hdBase = imagecreatefrompng('../player_01-hd.png');
-        if ($hdBase === false) throw new Exception('HD template missing');
-        
-        imagealphablending($hdBase, true);
-        imagesavealpha($hdBase, true);
-
-        $reszHd = imagecreatetruecolor(55, 56);
-        imagealphablending($reszHd, false);
-        imagesavealpha($reszHd, true);
-        $transp = imagecolorallocatealpha($reszHd, 0, 0, 0, 127);
-        imagefill($reszHd, 0, 0, $transp);
-        imagecopyresampled($reszHd, $usrImg, 0, 0, 0, 0, 55, 56, $w, $h);
-
-        $rotHd = imagerotate($reszHd, -90, imagecolorallocatealpha($reszHd, 0, 0, 0, 127));
-        imagealphablending($rotHd, false);
-        imagesavealpha($rotHd, true);
-
-        imagecopy($hdBase, $rotHd, 71, 5, 0, 0, imagesx($rotHd), imagesy($rotHd));
-        imagepng($hdBase, $icnsDir . "/player_{$idxStr}-hd.png");
-        
-        imagedestroy($reszHd);
-        imagedestroy($rotHd);
-        imagedestroy($hdBase);
-
-        $uhdBase = imagecreatefrompng('../player_01-uhd.png');
-        if ($uhdBase === false) throw new Exception('UHD template missing');
-        
-        imagealphablending($uhdBase, true);
-        imagesavealpha($uhdBase, true);
-
-        $reszUhd = imagecreatetruecolor(108, 108);
-        imagealphablending($reszUhd, false);
-        imagesavealpha($reszUhd, true);
-        $transp = imagecolorallocatealpha($reszUhd, 0, 0, 0, 127);
-        imagefill($reszUhd, 0, 0, $transp);
-        imagecopyresampled($reszUhd, $usrImg, 0, 0, 0, 0, 108, 108, $w, $h);
-
-        imagecopy($uhdBase, $reszUhd, 37, 8, 0, 0, 108, 108);
-        imagepng($uhdBase, $icnsDir . "/player_{$idxStr}-uhd.png");
-        
-        imagedestroy($reszUhd);
-        imagedestroy($uhdBase);
-
-        $hdPlist = file_get_contents('../player_01-hd.plist');
-        $hdPlist = str_replace('player_01', 'player_' . $idxStr, $hdPlist);
-        file_put_contents($icnsDir . "/player_{$idxStr}-hd.plist", $hdPlist);
-        
-        $uhdPlist = file_get_contents('../player_01-uhd.plist');
-        $uhdPlist = str_replace('player_01', 'player_' . $idxStr, $uhdPlist);
-        file_put_contents($icnsDir . "/player_{$idxStr}-uhd.plist", $uhdPlist);
+    $doCube = !$noCube && (!$ballOnly && !$waveOnly || $cubeOnly);
+    $doWave = !$noWave && (!$ballOnly && !$cubeOnly || $waveOnly);
+    $doBall = !$noBall && (!$cubeOnly && !$waveOnly || $ballOnly);
+    
+    if (!$doCube && !$doWave && !$doBall) {
+        $doCube = true;
     }
     
-    if (!$noBall) {
-        $ballHdBase = imagecreatefrompng('../player_ball_01-hd.png');
-        if ($ballHdBase === false) throw new Exception('Ball HD template missing');
-        
-        imagealphablending($ballHdBase, true);
-        imagesavealpha($ballHdBase, true);
-
-        $ballHd = imagecreatetruecolor(65, 66);
-        imagealphablending($ballHd, false);
-        imagesavealpha($ballHd, true);
-        $transp = imagecolorallocatealpha($ballHd, 0, 0, 0, 127);
-        imagefill($ballHd, 0, 0, $transp);
-        imagecopyresampled($ballHd, $usrImg, 0, 0, 0, 0, 65, 66, $w, $h);
-        
-        $ballHdCirc = imagecreatetruecolor(65, 66);
-        imagealphablending($ballHdCirc, false);
-        imagesavealpha($ballHdCirc, true);
-        imagefill($ballHdCirc, 0, 0, $transp);
-        
-        for ($y = 0; $y < 66; $y++) {
-            for ($x = 0; $x < 65; $x++) {
-                $dx = $x - 32;
-                $dy = $y - 33;
-                $dist = sqrt($dx*$dx + $dy*$dy);
-                if ($dist <= 32.5) {
-                    $clr = imagecolorat($ballHd, $x, $y);
-                    imagesetpixel($ballHdCirc, $x, $y, $clr);
-                }
-            }
-        }
-        
-        imagecopy($ballHdBase, $ballHdCirc, 83, 4, 0, 0, 65, 66);
-        imagepng($ballHdBase, $icnsDir . "/player_ball_{$idxStr}-hd.png");
-        
-        imagedestroy($ballHd);
-        imagedestroy($ballHdCirc);
-        imagedestroy($ballHdBase);
-
-        $ballUhdBase = imagecreatefrompng('../player_ball_01-uhd.png');
-        if ($ballUhdBase === false) throw new Exception('Ball UHD template missing');
-        
-        imagealphablending($ballUhdBase, true);
-        imagesavealpha($ballUhdBase, true);
-
-        $ballUhd = imagecreatetruecolor(130, 130);
-        imagealphablending($ballUhd, false);
-        imagesavealpha($ballUhd, true);
-        $transp = imagecolorallocatealpha($ballUhd, 0, 0, 0, 127);
-        imagefill($ballUhd, 0, 0, $transp);
-        imagecopyresampled($ballUhd, $usrImg, 0, 0, 0, 0, 130, 130, $w, $h);
-        
-        $ballUhdCirc = imagecreatetruecolor(130, 130);
-        imagealphablending($ballUhdCirc, false);
-        imagesavealpha($ballUhdCirc, true);
-        imagefill($ballUhdCirc, 0, 0, $transp);
-        
-        for ($y = 0; $y < 130; $y++) {
-            for ($x = 0; $x < 130; $x++) {
-                $dx = $x - 65;
-                $dy = $y - 65;
-                $dist = sqrt($dx*$dx + $dy*$dy);
-                if ($dist <= 65) {
-                    $clr = imagecolorat($ballUhd, $x, $y);
-                    imagesetpixel($ballUhdCirc, $x, $y, $clr);
-                }
-            }
-        }
-        
-        imagecopy($ballUhdBase, $ballUhdCirc, 162, 8, 0, 0, 130, 130);
-        imagepng($ballUhdBase, $icnsDir . "/player_ball_{$idxStr}-uhd.png");
-        
-        imagedestroy($ballUhd);
-        imagedestroy($ballUhdCirc);
-        imagedestroy($ballUhdBase);
-
-        if (file_exists('../player_ball_01-hd.plist')) {
-            $ballHdPlist = file_get_contents('../player_ball_01-hd.plist');
-            $ballHdPlist = str_replace('player_ball_01', 'player_ball_' . $idxStr, $ballHdPlist);
-            file_put_contents($icnsDir . "/player_ball_{$idxStr}-hd.plist", $ballHdPlist);
-        }
-        if (file_exists('../player_ball_01-uhd.plist')) {
-            $ballUhdPlist = file_get_contents('../player_ball_01-uhd.plist');
-            $ballUhdPlist = str_replace('player_ball_01', 'player_ball_' . $idxStr, $ballUhdPlist);
-            file_put_contents($icnsDir . "/player_ball_{$idxStr}-uhd.plist", $ballUhdPlist);
-        }
+    if ($doCube) {
+        procCube($usrImg, $w, $h, $idxStr, $icnsDir, $p1Color);
+    }
+    
+    if ($doWave) {
+        procWave($usrImg, $w, $h, $idxStr, $icnsDir, $p2Color);
+    }
+    
+    if ($doBall) {
+        procBall($usrImg, $w, $h, $idxStr, $icnsDir, $p1Color);
     }
 
     $pckJsonCont = file_get_contents('../pack.json');

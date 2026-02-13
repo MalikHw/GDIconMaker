@@ -2,9 +2,9 @@
 
 function invertColorImg($img, $targetHex) {
     $targetRgb = hexToRgb($targetHex);
-    $invR = 255 - $targetRgb['r'];
-    $invG = 255 - $targetRgb['g'];
-    $invB = 255 - $targetRgb['b'];
+    $targetHsv = rgbToHsv($targetRgb['r'], $targetRgb['g'], $targetRgb['b']);
+    
+    $hueShift = ($targetHsv['h'] + 180) % 360;
     
     $w = imagesx($img);
     $h = imagesy($img);
@@ -15,7 +15,15 @@ function invertColorImg($img, $targetHex) {
             $a = ($rgb >> 24) & 0xFF;
             
             if($a < 127) {
-                imagesetpixel($img, $x, $y, imagecolorallocatealpha($img, $invR, $invG, $invB, $a));
+                $r = ($rgb >> 16) & 0xFF;
+                $g = ($rgb >> 8) & 0xFF;
+                $b = $rgb & 0xFF;
+                
+                $hsv = rgbToHsv($r, $g, $b);
+                $hsv['h'] = ($hsv['h'] + $hueShift) % 360;
+                $newRgb = hsvToRgb($hsv['h'], $hsv['s'], $hsv['v']);
+                
+                imagesetpixel($img, $x, $y, imagecolorallocatealpha($img, $newRgb['r'], $newRgb['g'], $newRgb['b'], $a));
             }
         }
     }
@@ -29,6 +37,61 @@ function hexToRgb($hex) {
         'r' => hexdec(substr($hex, 0, 2)),
         'g' => hexdec(substr($hex, 2, 2)),
         'b' => hexdec(substr($hex, 4, 2))
+    ];
+}
+
+function rgbToHsv($r, $g, $b) {
+    $r = $r / 255;
+    $g = $g / 255;
+    $b = $b / 255;
+    
+    $max = max($r, $g, $b);
+    $min = min($r, $g, $b);
+    $delta = $max - $min;
+    
+    $h = 0;
+    if($delta != 0) {
+        if($max == $r) {
+            $h = 60 * fmod((($g - $b) / $delta), 6);
+        } elseif($max == $g) {
+            $h = 60 * ((($b - $r) / $delta) + 2);
+        } else {
+            $h = 60 * ((($r - $g) / $delta) + 4);
+        }
+    }
+    if($h < 0) $h += 360;
+    
+    $s = ($max == 0) ? 0 : ($delta / $max);
+    $v = $max;
+    
+    return ['h' => $h, 's' => $s, 'v' => $v];
+}
+
+function hsvToRgb($h, $s, $v) {
+    $c = $v * $s;
+    $x = $c * (1 - abs(fmod(($h / 60), 2) - 1));
+    $m = $v - $c;
+    
+    $rp = 0; $gp = 0; $bp = 0;
+    
+    if($h >= 0 && $h < 60) {
+        $rp = $c; $gp = $x; $bp = 0;
+    } elseif($h >= 60 && $h < 120) {
+        $rp = $x; $gp = $c; $bp = 0;
+    } elseif($h >= 120 && $h < 180) {
+        $rp = 0; $gp = $c; $bp = $x;
+    } elseif($h >= 180 && $h < 240) {
+        $rp = 0; $gp = $x; $bp = $c;
+    } elseif($h >= 240 && $h < 300) {
+        $rp = $x; $gp = 0; $bp = $c;
+    } else {
+        $rp = $c; $gp = 0; $bp = $x;
+    }
+    
+    return [
+        'r' => round(($rp + $m) * 255),
+        'g' => round(($gp + $m) * 255),
+        'b' => round(($bp + $m) * 255)
     ];
 }
 
