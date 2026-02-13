@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 
-require_once 'process2.php';
+require_once '../process2.php';
 
 function fckOff($msg) {
     echo json_encode(['success' => false, 'error' => $msg]);
@@ -27,8 +27,6 @@ $noWave = isset($_POST['noWave']) && $_POST['noWave'] === 'true';
 $waveOnly = isset($_POST['waveOnly']) && $_POST['waveOnly'] === 'true';
 $noCube = isset($_POST['noCube']) && $_POST['noCube'] === 'true';
 $cubeOnly = isset($_POST['cubeOnly']) && $_POST['cubeOnly'] === 'true';
-$p1Color = isset($_POST['p1Color']) && !empty($_POST['p1Color']) ? $_POST['p1Color'] : null;
-$p2Color = isset($_POST['p2Color']) && !empty($_POST['p2Color']) ? $_POST['p2Color'] : null;
 
 if (empty($nm) || empty($auth)) {
     fckOff('Name and author cant be empty');
@@ -79,15 +77,15 @@ try {
     }
     
     if ($doCube) {
-        procCube($usrImg, $w, $h, $idxStr, $icnsDir, $p1Color);
+        procCube($usrImg, $w, $h, $idxStr, $icnsDir);
     }
     
     if ($doWave) {
-        procWave($usrImg, $w, $h, $idxStr, $icnsDir, $p2Color);
+        procWave($usrImg, $w, $h, $idxStr, $icnsDir);
     }
     
     if ($doBall) {
-        procBall($usrImg, $w, $h, $idxStr, $icnsDir, $p1Color);
+        procBall($usrImg, $w, $h, $idxStr, $icnsDir);
     }
 
     $pckJsonCont = file_get_contents('../pack.json');

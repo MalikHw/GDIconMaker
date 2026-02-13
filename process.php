@@ -20,6 +20,26 @@ function sendSuccess($msg, $dlUrl, $fname) {
     exit;
 }
 
+// trigger cleanup in background
+$cleanupToken = 'MIKUMIKUMIKUMIKU' . md5(__DIR__);
+$cleanupUrl = 'https://gdiconmaker.rf.gd/cleanup.php?token=' . urlencode($cleanupToken);
+
+if (function_exists('curl_init')) {
+    $ch = curl_init($cleanupUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+    @curl_exec($ch);
+    @curl_close($ch);
+} else {
+    @file_get_contents($cleanupUrl, false, stream_context_create([
+        'http' => [
+            'timeout' => 1,
+            'ignore_errors' => true
+        ]
+    ]));
+}
+
 if($_SERVER['REQUEST_METHOD'] !== 'POST') {
     fckOff('Invalid request method');
 }

@@ -45,9 +45,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     setupGamemodeChks();
-    setupColorInputs();
     checkIfMobile();
     checkZipLimit();
+    loadIconReq();
 
     const savedAuth = localStorage.getItem('gdIconAuthor');
     if(savedAuth) {
@@ -142,6 +142,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `;
             });
+    }
+
+    function loadIconReq() {
+        fetch('icon.php')
+            .then(r => r.json())
+            .then(d => {
+                if(d.visible && d.url) {
+                    document.getElementById('iconRequestCard').style.display = 'block';
+                    document.getElementById('iconRequestBtn').href = d.url;
+                }
+            })
+            .catch(e => console.log('icon req err:', e));
     }
 
     dropZone.addEventListener('dragover', (e) => {
@@ -642,15 +654,6 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('doWave', document.getElementById('doWave').checked ? 'true' : 'false');
         formData.append('doBall', document.getElementById('doBall').checked ? 'true' : 'false');
         
-        const p1Col = document.getElementById('p1Color').value;
-        const p2Col = document.getElementById('p2Color').value;
-        if(p1Col && /^#[0-9A-F]{6}$/i.test(p1Col)) {
-            formData.append('p1Color', p1Col);
-        }
-        if(p2Col && /^#[0-9A-F]{6}$/i.test(p2Col)) {
-            formData.append('p2Color', p2Col);
-        }
-        
         formData.append('packName', document.getElementById('packName').value);
         formData.append('packAuthor', document.getElementById('packAuthor').value);
         
@@ -664,9 +667,41 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: formData
             });
 
-            const data = await resp.json();
-
-            if(data.success) {
+            const contentType = resp.headers.get('content-type');
+            
+            if(contentType && contentType.includes('application/json')) {
+                const data = await resp.json();
+                if(data.success) {
+                    incrZipCount();
+                    
+                    fetch(`stats.php?action=icon`)
+                        .then(r => r.json())
+                        .then(d => {
+                            if(d.success) updtStts(d.stats);
+                        });
+                    
+                    window.location.href = data.downloadUrl;
+                    
+                    rslt.className = 'result success';
+                    rslt.innerHTML = `
+                        <h3>✓ done!</h3>
+                        <p>${data.message}</p>
+                        <p style="font-size: 14px; color: #666; margin-top: 10px;">
+                            <i class="nf nf-fa-download"></i> download started! file gets deleted after.
+                        </p>
+                    `;
+                    
+                    setTimeout(() => {
+                        showDonateModal();
+                    }, 500);
+                } else {
+                    rslt.className = 'result error';
+                    rslt.innerHTML = `
+                        <h3>✗ shit broke</h3>
+                        <p>${data.message}</p>
+                    `;
+                }
+            } else {
                 incrZipCount();
                 
                 fetch(`stats.php?action=icon`)
@@ -675,17 +710,21 @@ document.addEventListener('DOMContentLoaded', function() {
                         if(d.success) updtStts(d.stats);
                     });
                 
-                const lnk = document.createElement('a');
-                lnk.href = data.downloadUrl;
-                lnk.download = data.filename;
-                document.body.appendChild(lnk);
-                lnk.click();
-                document.body.removeChild(lnk);
+                const blob = await resp.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = document.getElementById('packName').value.replace(/[^a-zA-Z0-9_-]/g, '_') + '.zip';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
                 
                 rslt.className = 'result success';
                 rslt.innerHTML = `
                     <h3>✓ done!</h3>
-                    <p>${data.message}</p>
+                    <p>Icon pack created successfully with ${procsdImgs.length} icon(s)!</p>
                     <p style="font-size: 14px; color: #666; margin-top: 10px;">
                         <i class="nf nf-fa-download"></i> download started! file gets deleted after.
                     </p>
@@ -694,12 +733,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     showDonateModal();
                 }, 500);
-            } else {
-                rslt.className = 'result error';
-                rslt.innerHTML = `
-                    <h3>✗ shit broke</h3>
-                    <p>${data.message}</p>
-                `;
             }
         } catch(err) {
             rslt.className = 'result error';

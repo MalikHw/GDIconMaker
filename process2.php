@@ -1,100 +1,5 @@
 <?php
 
-function invertColorImg($img, $targetHex) {
-    $targetRgb = hexToRgb($targetHex);
-    $targetHsv = rgbToHsv($targetRgb['r'], $targetRgb['g'], $targetRgb['b']);
-    
-    $hueShift = ($targetHsv['h'] + 180) % 360;
-    
-    $w = imagesx($img);
-    $h = imagesy($img);
-    
-    for($y = 0; $y < $h; $y++) {
-        for($x = 0; $x < $w; $x++) {
-            $rgb = imagecolorat($img, $x, $y);
-            $a = ($rgb >> 24) & 0xFF;
-            
-            if($a < 127) {
-                $r = ($rgb >> 16) & 0xFF;
-                $g = ($rgb >> 8) & 0xFF;
-                $b = $rgb & 0xFF;
-                
-                $hsv = rgbToHsv($r, $g, $b);
-                $hsv['h'] = ($hsv['h'] + $hueShift) % 360;
-                $newRgb = hsvToRgb($hsv['h'], $hsv['s'], $hsv['v']);
-                
-                imagesetpixel($img, $x, $y, imagecolorallocatealpha($img, $newRgb['r'], $newRgb['g'], $newRgb['b'], $a));
-            }
-        }
-    }
-    
-    return $img;
-}
-
-function hexToRgb($hex) {
-    $hex = ltrim($hex, '#');
-    return [
-        'r' => hexdec(substr($hex, 0, 2)),
-        'g' => hexdec(substr($hex, 2, 2)),
-        'b' => hexdec(substr($hex, 4, 2))
-    ];
-}
-
-function rgbToHsv($r, $g, $b) {
-    $r = $r / 255;
-    $g = $g / 255;
-    $b = $b / 255;
-    
-    $max = max($r, $g, $b);
-    $min = min($r, $g, $b);
-    $delta = $max - $min;
-    
-    $h = 0;
-    if($delta != 0) {
-        if($max == $r) {
-            $h = 60 * fmod((($g - $b) / $delta), 6);
-        } elseif($max == $g) {
-            $h = 60 * ((($b - $r) / $delta) + 2);
-        } else {
-            $h = 60 * ((($r - $g) / $delta) + 4);
-        }
-    }
-    if($h < 0) $h += 360;
-    
-    $s = ($max == 0) ? 0 : ($delta / $max);
-    $v = $max;
-    
-    return ['h' => $h, 's' => $s, 'v' => $v];
-}
-
-function hsvToRgb($h, $s, $v) {
-    $c = $v * $s;
-    $x = $c * (1 - abs(fmod(($h / 60), 2) - 1));
-    $m = $v - $c;
-    
-    $rp = 0; $gp = 0; $bp = 0;
-    
-    if($h >= 0 && $h < 60) {
-        $rp = $c; $gp = $x; $bp = 0;
-    } elseif($h >= 60 && $h < 120) {
-        $rp = $x; $gp = $c; $bp = 0;
-    } elseif($h >= 120 && $h < 180) {
-        $rp = 0; $gp = $c; $bp = $x;
-    } elseif($h >= 180 && $h < 240) {
-        $rp = 0; $gp = $x; $bp = $c;
-    } elseif($h >= 240 && $h < 300) {
-        $rp = $x; $gp = 0; $bp = $c;
-    } else {
-        $rp = $c; $gp = 0; $bp = $x;
-    }
-    
-    return [
-        'r' => round(($rp + $m) * 255),
-        'g' => round(($gp + $m) * 255),
-        'b' => round(($bp + $m) * 255)
-    ];
-}
-
 function procCube($usrImg, $w, $h, $idxStr, $icnsDir, $p1Color = null) {
     $hdBase = imagecreatefrompng('player_01-hd.png');
     if($hdBase === false) throw new Exception('HD template missing');
@@ -108,10 +13,6 @@ function procCube($usrImg, $w, $h, $idxStr, $icnsDir, $p1Color = null) {
     $transp = imagecolorallocatealpha($reszHd, 0, 0, 0, 127);
     imagefill($reszHd, 0, 0, $transp);
     imagecopyresampled($reszHd, $usrImg, 0, 0, 0, 0, 55, 56, $w, $h);
-    
-    if($p1Color) {
-        $reszHd = invertColorImg($reszHd, $p1Color);
-    }
 
     $rotHd = imagerotate($reszHd, -90, imagecolorallocatealpha($reszHd, 0, 0, 0, 127));
     imagealphablending($rotHd, false);
@@ -136,10 +37,6 @@ function procCube($usrImg, $w, $h, $idxStr, $icnsDir, $p1Color = null) {
     $transp = imagecolorallocatealpha($reszUhd, 0, 0, 0, 127);
     imagefill($reszUhd, 0, 0, $transp);
     imagecopyresampled($reszUhd, $usrImg, 0, 0, 0, 0, 108, 108, $w, $h);
-    
-    if($p1Color) {
-        $reszUhd = invertColorImg($reszUhd, $p1Color);
-    }
 
     imagecopy($uhdBase, $reszUhd, 37, 8, 0, 0, 108, 108);
     imagepng($uhdBase, $icnsDir . "/player_{$idxStr}-uhd.png");
@@ -169,10 +66,6 @@ function procWave($usrImg, $w, $h, $idxStr, $icnsDir, $p2Color = null) {
     $transp = imagecolorallocatealpha($waveHd, 0, 0, 0, 127);
     imagefill($waveHd, 0, 0, $transp);
     imagecopyresampled($waveHd, $usrImg, 0, 0, 0, 0, 24, 25, $w, $h);
-    
-    if($p2Color) {
-        $waveHd = invertColorImg($waveHd, $p2Color);
-    }
     
     $waveHdCirc = imagecreatetruecolor(24, 25);
     imagealphablending($waveHdCirc, false);
@@ -210,10 +103,6 @@ function procWave($usrImg, $w, $h, $idxStr, $icnsDir, $p2Color = null) {
     $transp = imagecolorallocatealpha($waveUhd, 0, 0, 0, 127);
     imagefill($waveUhd, 0, 0, $transp);
     imagecopyresampled($waveUhd, $usrImg, 0, 0, 0, 0, 48, 53, $w, $h);
-    
-    if($p2Color) {
-        $waveUhd = invertColorImg($waveUhd, $p2Color);
-    }
     
     $waveUhdCirc = imagecreatetruecolor(48, 53);
     imagealphablending($waveUhdCirc, false);
@@ -265,10 +154,6 @@ function procBall($usrImg, $w, $h, $idxStr, $icnsDir, $p1Color = null) {
     imagefill($ballHd, 0, 0, $transp);
     imagecopyresampled($ballHd, $usrImg, 0, 0, 0, 0, 65, 66, $w, $h);
     
-    if($p1Color) {
-        $ballHd = invertColorImg($ballHd, $p1Color);
-    }
-    
     $ballHdCirc = imagecreatetruecolor(65, 66);
     imagealphablending($ballHdCirc, false);
     imagesavealpha($ballHdCirc, true);
@@ -305,10 +190,6 @@ function procBall($usrImg, $w, $h, $idxStr, $icnsDir, $p1Color = null) {
     $transp = imagecolorallocatealpha($ballUhd, 0, 0, 0, 127);
     imagefill($ballUhd, 0, 0, $transp);
     imagecopyresampled($ballUhd, $usrImg, 0, 0, 0, 0, 130, 130, $w, $h);
-    
-    if($p1Color) {
-        $ballUhd = invertColorImg($ballUhd, $p1Color);
-    }
     
     $ballUhdCirc = imagecreatetruecolor(130, 130);
     imagealphablending($ballUhdCirc, false);

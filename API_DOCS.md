@@ -13,8 +13,6 @@ All sent as `multipart/form-data`
 
 ### Optional:
 - `packIcon` (file) - Custom pack.png (will be resized to 336x336 with watermark)
-- `p1Color` (string) - Hex color for cube/ball (e.g., "#FF0000")
-- `p2Color` (string) - Hex color for wave (e.g., "#00FF00")
 - `noBall` (string) - Set to "true" to skip ball gamemode icons
 - `ballOnly` (string) - Set to "true" to generate ONLY ball gamemode icons
 - `noWave` (string) - Set to "true" to skip wave gamemode icons
@@ -51,17 +49,6 @@ curl -X POST https://gdiconmaker.rf.gd/api/submit.php \
   -F "name=My Cool Pack" \
   -F "author=YourName" \
   -F "packIcon=@custom_pack.png" \
-  -o pack.zip
-```
-
-### With color customization:
-```bash
-curl -X POST https://gdiconmaker.rf.gd/api/submit.php \
-  -F "image=@myicon.png" \
-  -F "name=My Cool Pack" \
-  -F "author=YourName" \
-  -F "p1Color=#FF0000" \
-  -F "p2Color=#00FF00" \
   -o pack.zip
 ```
 
@@ -109,7 +96,5 @@ curl -X POST https://gdiconmaker.rf.gd/api/submit.php \
 - Image MUST be 1:1 ratio (square)
 - Gamemode flags are mutually exclusive (e.g., can't use both `ballOnly` and `waveOnly`)
 - If no gamemode flags are set, all gamemodes are generated
-- Color format: hex colors with # (e.g., "#FFFFFF")
-- Colors use HSV hue-shift for conversion
 - ZIP is deleted after download
 - No rate limiting (yet lol)

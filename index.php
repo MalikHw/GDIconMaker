@@ -157,24 +157,6 @@ $dy = (int)$dt->format('j');
                 </div>
 
                 <div class="form-group">
-                    <label for="p1Color"><i class="nf nf-fa-paint_brush"></i> P1 color (cube/ball):</label>
-                    <div class="color-input-group">
-                        <input type="color" id="p1ColorPicker" value="#FFFFFF">
-                        <input type="text" id="p1Color" name="p1Color" placeholder="#FFFFFF" maxlength="7">
-                        <span class="color-hint">icons will be hue-shifted from this color ( DONT USE RIGHT NOW - ITS BROKEN)</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="p2Color"><i class="nf nf-fa-paint_brush"></i> P2 color (wave):</label>
-                    <div class="color-input-group">
-                        <input type="color" id="p2ColorPicker" value="#FFFFFF">
-                        <input type="text" id="p2Color" name="p2Color" placeholder="#FFFFFF" maxlength="7">
-                        <span class="color-hint">icons will be hue-shifted from this color ( DONT USE RIGHT NOW - ITS BROKEn)</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
                     <label for="packName"><i class="nf nf-fa-tag"></i> pack name:</label>
                     <input type="text" id="packName" name="packName" placeholder="my sick pack" required>
                 </div>
@@ -193,6 +175,17 @@ $dy = (int)$dt->format('j');
             </form>
 
             <div id="result" class="result"></div>
+
+            <div id="iconRequestCard" class="icon-request-card" style="display:none;">
+                <div class="icon-request-content">
+                    <i class="nf nf-fa-picture_o" style="font-size: 48px; color: var(--accent);"></i>
+                    <h3>need a website icon?</h3>
+                    <p>got a cool idea for an icon but dont have the pic? we can help!</p>
+                    <a href="#" id="iconRequestBtn" target="_blank" class="icon-request-btn">
+                        <i class="nf nf-fa-external_link"></i> request icon
+                    </a>
+                </div>
+            </div>
 
             <footer class="footer">
                 <p>made with <i class="nf nf-fa-heart" style="color:#e74c3c;"></i> and shit by <strong>MalikHw47</strong></p>
