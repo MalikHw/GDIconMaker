@@ -729,13 +729,15 @@ input[type="file"] {
     user-select: none;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   CROP MODAL
+═══════════════════════════════════════════════════════════ */
 .crop-modal {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.85);
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     display: none;
     justify-content: center;
     align-items: center;
@@ -753,8 +755,8 @@ input[type="file"] {
     background: var(--bg-white);
     border-radius: 20px;
     padding: 30px;
-    max-width: 90%;
-    max-height: 90%;
+    max-width: 90vw;
+    max-height: 90vh;
     overflow: auto;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
@@ -877,6 +879,9 @@ input[type="file"] {
     background: #138496;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   FORM
+═══════════════════════════════════════════════════════════ */
 .form-group {
     margin-bottom: 20px;
 }
@@ -971,6 +976,9 @@ input[type="file"] {
     border: 2px solid #ffeeba;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════════ */
 .footer {
     margin-top: 40px;
     padding-top: 20px;
@@ -1017,6 +1025,7 @@ input[type="file"] {
     background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
     color: white;
     font-weight: 600;
+    cursor: pointer;
 }
 
 .social-links a.donate-link:hover {
@@ -1046,43 +1055,56 @@ input[type="file"] {
     text-decoration: underline;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   MODAL OVERLAY — shared base for ALL modals
+   Uses position:fixed + inset:0 so scrolling NEVER misaligns
+═══════════════════════════════════════════════════════════ */
 .modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.3s ease;
+    padding: 20px;
+    overflow-y: auto;
 }
 
 .modal-overlay.active {
     opacity: 1;
+    pointer-events: auto;
 }
 
+/* ─── modal card ─── */
 .modal {
     background: var(--bg-white);
     border-radius: 20px;
     max-width: 500px;
-    width: 90%;
+    width: 100%;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    transform: scale(0.9);
-    transition: transform 0.3s ease;
-    max-height: 90vh;
+    transform: scale(0.92) translateY(16px);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                opacity  0.3s ease;
+    max-height: calc(100vh - 40px);
     overflow-y: auto;
+    margin: auto;
 }
 
 .modal-overlay.active .modal {
-    transform: scale(1);
+    transform: scale(1) translateY(0);
+    opacity: 1;
 }
 
 .modal-content {
     padding: 40px;
+    position: relative;
 }
 
 .modal-header {
@@ -1096,6 +1118,13 @@ input[type="file"] {
     font-size: 24px;
 }
 
+.modal-sub {
+    color: var(--text-light);
+    font-size: 13px;
+    margin-top: 6px;
+    text-align: center;
+}
+
 .modal-body {
     text-align: center;
 }
@@ -1107,6 +1136,31 @@ input[type="file"] {
     margin-top: 20px;
 }
 
+/* ─── X close button (top-right of modal card) ─── */
+.modal-close-x {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: var(--text-light);
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: color 0.15s, background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close-x:hover {
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+}
+
+/* ─── generic modal buttons ─── */
 .modal-btn {
     padding: 15px 30px;
     border: none;
@@ -1133,12 +1187,14 @@ input[type="file"] {
     box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
 }
 
-.modal-btn.download-btn, .modal-btn.copy-btn {
+.modal-btn.download-btn,
+.modal-btn.copy-btn {
     background: var(--accent);
     color: white;
 }
 
-.modal-btn.download-btn:hover, .modal-btn.copy-btn:hover {
+.modal-btn.download-btn:hover,
+.modal-btn.copy-btn:hover {
     background: var(--primary);
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(80, 80, 80, 0.4);
@@ -1155,6 +1211,7 @@ input[type="file"] {
     box-shadow: 0 10px 25px rgba(108, 117, 125, 0.4);
 }
 
+/* ─── share textarea ─── */
 .share-text-box {
     background: var(--bg-light);
     border: 2px solid rgba(0,0,0,0.1);
@@ -1175,30 +1232,161 @@ input[type="file"] {
     outline: none;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   DONATE DROPDOWN (modal variant)
+═══════════════════════════════════════════════════════════ */
+.donate-modal {
+    max-width: 420px;
+}
+
+.donate-modal .modal-content {
+    padding: 32px 28px 24px;
+}
+
+.donate-modal .modal-header i {
+    font-size: 40px;
+}
+
+/* ─── donate option rows ─── */
+.dd-btn-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.dd-link-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-light);
+    border: 1.5px solid transparent;
+    border-radius: 10px;
+    padding: 13px 16px;
+    color: var(--text-dark);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.12s, color 0.15s;
+}
+
+.dd-link-btn:hover {
+    border-color: var(--accent);
+    background: rgba(102, 126, 234, 0.08);
+    color: var(--accent);
+    transform: translateX(4px);
+}
+
+.dd-link-btn .dd-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    width: 26px;
+    text-align: center;
+}
+
+.dd-link-btn .dd-label {
+    flex: 1;
+    line-height: 1.3;
+}
+
+.dd-link-btn .dd-sub {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-light);
+    display: block;
+    margin-top: 2px;
+}
+
+.dd-link-btn:hover .dd-sub {
+    opacity: 0.75;
+}
+
+.dd-link-btn .dd-arrow {
+    font-size: 12px;
+    opacity: 0.4;
+    flex-shrink: 0;
+}
+
+/* ─── Ko-fi widget strip ─── */
+.dd-kofi-wrap {
+    border-top: 1px solid rgba(128,128,128,0.15);
+    padding-top: 16px;
+    display: flex;
+    justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ICON REQUEST CARD
+═══════════════════════════════════════════════════════════ */
+.icon-request-card {
+    margin-top: 30px;
+    padding: 30px;
+    background: var(--bg-light);
+    border-radius: 15px;
+    text-align: center;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+}
+
+.icon-request-content h3 {
+    color: var(--text-dark);
+    margin: 15px 0 10px;
+    font-size: 20px;
+}
+
+.icon-request-content p {
+    color: var(--text-light);
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.icon-request-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.icon-request-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════════ */
 @media (max-width: 1200px) {
     .main-layout {
         grid-template-columns: 1fr;
         grid-template-rows: auto auto auto;
     }
-    
+
     .main-container {
         grid-column: 1;
         grid-row: 2;
         margin-top: 20px;
     }
-    
+
     .youtube-container {
         grid-column: 1;
         grid-row: 1;
         margin-top: 80px;
     }
-    
+
     .changelog-container {
         grid-column: 1;
         grid-row: 3;
         max-height: 400px;
     }
-    
+
     .stats-outside {
         position: static;
         justify-content: center;
@@ -1211,52 +1399,54 @@ input[type="file"] {
         padding: 10px;
         gap: 15px;
     }
-    
-    .main-container, .youtube-container, .changelog-container {
+
+    .main-container,
+    .youtube-container,
+    .changelog-container {
         padding: 20px;
     }
-    
+
     h1 {
         font-size: 1.5em;
     }
-    
+
     .crop-container {
         flex-direction: column;
     }
-    
+
     .pack-icon-upload {
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     .pack-icon-label {
         width: 100%;
         justify-content: center;
     }
-    
+
     .ball-options {
         flex-direction: column;
         gap: 10px;
     }
-    
+
     .image-preview .icon-number {
         font-size: 11px;
         padding: 3px;
     }
-    
+
     .social-links {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .social-links a {
         justify-content: center;
     }
-    
+
     .modal-content {
         padding: 25px;
     }
-    
+
     .modal-header h2 {
         font-size: 20px;
     }
@@ -1272,5 +1462,9 @@ input[type="file"] {
 
     .shortcuts-help {
         bottom: 80px;
+    }
+
+    .donate-modal .modal-content {
+        padding: 24px 16px 18px;
     }
 }

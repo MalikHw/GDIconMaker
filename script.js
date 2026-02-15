@@ -14,6 +14,113 @@ let currImg = null;
 let imgScale = 1;
 let savedCrop = null;
 
+// ── Donate Dropdown ──────────────────────────────────────────────────────────
+function createDonateDropdown() {
+    // Remove existing dropdown if any
+    const existing = document.getElementById('donateDropdownOverlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'donateDropdownOverlay';
+    overlay.className = 'modal-overlay';
+
+    overlay.innerHTML = `
+        <div id="donateDropdownBox" class="modal donate-modal">
+            <div class="modal-content">
+                <button id="donateDropdownClose" class="modal-close-x" title="close">
+                    <i class="nf nf-fa-times"></i>
+                </button>
+                <div class="modal-header">
+                    <i class="nf nf-fa-heart" style="color:#e74c3c; font-size:40px;"></i>
+                    <h2>support the dev!</h2>
+                    <p class="modal-sub">this tool is 100% free — any support helps a ton</p>
+                </div>
+                <div class="modal-body">
+                    <div class="dd-btn-row">
+                        <a class="dd-link-btn" href="https://absolllute.com/store/mega_hack?gift=1" target="_blank" rel="noopener">
+                            <i class="nf nf-fa-shopping_cart dd-icon"></i>
+                            <span class="dd-label">
+                                Buy MHv9
+                                <span class="dd-sub">get Mega Hack v9 as a gift</span>
+                            </span>
+                            <i class="nf nf-fa-external_link dd-arrow"></i>
+                        </a>
+                        <a class="dd-link-btn" href="https://throne.com/MalikHw47" target="_blank" rel="noopener">
+                            <i class="nf nf-fa-gift dd-icon"></i>
+                            <span class="dd-label">
+                                Get me a gift!
+                                <span class="dd-sub">wishlist on Throne</span>
+                            </span>
+                            <i class="nf nf-fa-external_link dd-arrow"></i>
+                        </a>
+                        <a class="dd-link-btn" href="https://discord.gg/G9bZ92eg2n" target="_blank" rel="noopener">
+                            <i class="nf nf-fa-discord dd-icon"></i>
+                            <span class="dd-label">
+                                Boost our Discord server
+                                <span class="dd-sub">join &amp; boost the community</span>
+                            </span>
+                            <i class="nf nf-fa-external_link dd-arrow"></i>
+                        </a>
+                    </div>
+                    <div class="dd-kofi-wrap" id="kofiWidgetZone">
+                        <!-- Ko-fi widget injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+    setTimeout(() => overlay.classList.add('active'), 10);
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeDonateDropdown();
+    });
+    document.getElementById('donateDropdownClose').addEventListener('click', closeDonateDropdown);
+
+    // Ko-fi: reuse if already loaded, inject once otherwise
+    const kofiZone = document.getElementById('kofiWidgetZone');
+    if (typeof kofiwidget2 !== 'undefined') {
+        kofiwidget2.init('Sponsor', '#525252', 'G2G310RTCB');
+        kofiZone.innerHTML = kofiwidget2.getHTML();
+    } else {
+        const kofiScript = document.createElement('script');
+        kofiScript.type = 'text/javascript';
+        kofiScript.src = 'https://storage.ko-fi.com/cdn/widget/Widget_2.js';
+        kofiScript.onload = function() {
+            if (typeof kofiwidget2 !== 'undefined') {
+                kofiwidget2.init('Sponsor', '#525252', 'G2G310RTCB');
+                kofiZone.innerHTML = kofiwidget2.getHTML();
+            }
+        };
+        document.head.appendChild(kofiScript);
+    }
+
+    const escHandler = (e) => {
+        if (e.key === 'Escape') { closeDonateDropdown(); document.removeEventListener('keydown', escHandler); }
+    };
+    document.addEventListener('keydown', escHandler);
+}
+
+function closeDonateDropdown() {
+    const overlay = document.getElementById('donateDropdownOverlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+        setTimeout(() => overlay.remove(), 300);
+    }
+}
+
+function interceptDonateLinks() {
+    // Intercept all donate anchor links and the footer donate link
+    document.querySelectorAll('a.donate-link, a[href*="malikhw.github.io/donate"]').forEach(el => {
+        el.addEventListener('click', (e) => {
+            e.preventDefault();
+            createDonateDropdown();
+        });
+    });
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 document.addEventListener('DOMContentLoaded', function() {
     const frm = document.getElementById('iconForm');
     const fileIn = document.getElementById('iconImage');
@@ -48,6 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
     checkIfMobile();
     checkZipLimit();
     loadIconReq();
+    interceptDonateLinks();
 
     const savedAuth = localStorage.getItem('gdIconAuthor');
     if(savedAuth) {
@@ -982,9 +1090,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         if u found it helpful, consider donating!
                     </p>
                     <div class="modal-buttons">
-                        <a href="https://malikhw.github.io/donate" target="_blank" class="modal-btn donate-btn" onclick="window.donateModalClose()">
+                        <button type="button" class="modal-btn donate-btn" id="openDonateFromModal">
                             <i class="nf nf-fa-heart"></i> donate ❤️
-                        </a>
+                        </button>
                         <button type="button" class="modal-btn close-btn" id="closeDonate">
                             <i class="nf nf-fa-times"></i> nah
                         </button>
@@ -1000,10 +1108,14 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.appendChild(modOvr);
         
         setTimeout(() => modOvr.classList.add('active'), 10);
-        
-        window.donateModalClose = function() {
-            closeDonateAndShare();
-        };
+
+        document.getElementById('openDonateFromModal').addEventListener('click', () => {
+            modOvr.classList.remove('active');
+            setTimeout(() => {
+                document.body.removeChild(modOvr);
+                createDonateDropdown();
+            }, 200);
+        });
         
         document.getElementById('closeDonate').addEventListener('click', closeDonateAndShare);
         
