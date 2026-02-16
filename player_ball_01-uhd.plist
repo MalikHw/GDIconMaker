@@ -11,11 +11,11 @@
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{142,142}</string>
+                <string>{0,0}</string>
                 <key>spriteSourceSize</key>
-                <string>{142,142}</string>
+                <string>{0,0}</string>
                 <key>textureRect</key>
-                <string>{{156,2},{142,142}}</string>
+                <string>{{0,0},{0,0}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -46,6 +46,21 @@
                 <string>{152,152}</string>
                 <key>textureRect</key>
                 <string>{{2,2},{152,152}}</string>
+                <key>textureRotated</key>
+                <false/>
+            </dict>
+            <key>player_ball_01_extra_001.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{0,0}</string>
+                <key>spriteSize</key>
+                <string>{142,142}</string>
+                <key>spriteSourceSize</key>
+                <string>{142,142}</string>
+                <key>textureRect</key>
+                <string>{{156,2},{142,142}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>

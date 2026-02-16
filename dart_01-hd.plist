@@ -26,11 +26,11 @@
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{36,30}</string>
+                <string>{0,0}</string>
                 <key>spriteSourceSize</key>
-                <string>{36,30}</string>
+                <string>{0,0}</string>
                 <key>textureRect</key>
-                <string>{{2,100},{36,30}}</string>
+                <string>{{0,0},{0,0}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -46,6 +46,21 @@
                 <string>{57,49}</string>
                 <key>textureRect</key>
                 <string>{{2,2},{57,49}}</string>
+                <key>textureRotated</key>
+                <false/>
+            </dict>
+            <key>dart_01_extra_001.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{0,0}</string>
+                <key>spriteSize</key>
+                <string>{36,30}</string>
+                <key>spriteSourceSize</key>
+                <string>{36,30}</string>
+                <key>textureRect</key>
+                <string>{{2,100},{36,30}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>

@@ -78,7 +78,7 @@ $dy = (int)$dt->format('j');
                             <li>Drag-n-drop the TP to the right (just like Minecraft)</li>
                             <li>Click apply</li>
                             <li>Go to your icon set</li>
-                            <li><strong>THAT'S IT!</strong> (make sure to set p1 color to white(and p2 for wave), if you don't want then install <a href="https://geode-sdk.org/mods/rooot.custom-gamemode-colors" target="_blank">this fuck</a>)</li>
+                            <li><strong>THAT'S IT!(no need to change player colors as in 15/feb/2026 update</li>
                         </ol>
                     </div>
 

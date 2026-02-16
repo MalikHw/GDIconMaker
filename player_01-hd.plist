@@ -11,11 +11,11 @@
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{61,60}</string>
+                <string>{0,0}</string>
                 <key>spriteSourceSize</key>
-                <string>{61,60}</string>
+                <string>{0,0}</string>
                 <key>textureRect</key>
-                <string>{{69,2},{61,60}}</string>
+                <string>{{0,0},{0,0}}</string>
                 <key>textureRotated</key>
                 <true/>
             </dict>
@@ -48,6 +48,21 @@
                 <string>{{2,2},{65,64}}</string>
                 <key>textureRotated</key>
                 <false/>
+            </dict>
+            <key>player_01_extra_001.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{0,0}</string>
+                <key>spriteSize</key>
+                <string>{61,60}</string>
+                <key>spriteSourceSize</key>
+                <string>{61,60}</string>
+                <key>textureRect</key>
+                <string>{{69,2},{61,60}}</string>
+                <key>textureRotated</key>
+                <true/>
             </dict>
         </dict>
         <key>metadata</key>

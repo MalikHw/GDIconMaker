@@ -41,7 +41,7 @@ function createDonateDropdown() {
                             <i class="nf nf-fa-shopping_cart dd-icon"></i>
                             <span class="dd-label">
                                 Buy MHv9
-                                <span class="dd-sub">get Mega Hack v9 as a gift</span>
+                                <span class="dd-sub">get me Mega Hack v9 as a gift!(it'll be a W)</span>
                             </span>
                             <i class="nf nf-fa-external_link dd-arrow"></i>
                         </a>
@@ -49,7 +49,7 @@ function createDonateDropdown() {
                             <i class="nf nf-fa-gift dd-icon"></i>
                             <span class="dd-label">
                                 Get me a gift!
-                                <span class="dd-sub">wishlist on Throne</span>
+                                <span class="dd-sub">Gift me anything else from Throne</span>
                             </span>
                             <i class="nf nf-fa-external_link dd-arrow"></i>
                         </a>
@@ -57,7 +57,7 @@ function createDonateDropdown() {
                             <i class="nf nf-fa-discord dd-icon"></i>
                             <span class="dd-label">
                                 Boost our Discord server
-                                <span class="dd-sub">join &amp; boost the community</span>
+                                <span class="dd-sub">join &amp; boost my discord community</span>
                             </span>
                             <i class="nf nf-fa-external_link dd-arrow"></i>
                         </a>
