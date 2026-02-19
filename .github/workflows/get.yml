@@ -58,15 +58,15 @@ jobs:
           fi
 
       - name: Hide hcaptcha secret key
-  run: |
-    sed -i "52c\\\$hcaptchaSecret = 'hatsune_miku'; // nice try lol" process.php
+        run: |
+          sed -i "52c\\\$hcaptchaSecret = 'hatsune_miku'; // nice try lol" process.php
           
           # Replace real secret with fake one in process.php
           if [ -f "process.php" ]; then
             sed -i "s/${REAL_SECRET}/MIKUMIKUMIKUMIKU/g" process.php
           fi
           
-          echo "🔒 All secrets replaced with fake ones for public repo"
+          echo "All secrets replaced with fake ones for public reo"
       
       - name: Check for changes
         id: check_changes
