@@ -44,6 +44,48 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST') {
     fckOff('Invalid request method');
 }
 
+// hCaptcha verification
+$hcaptchaResponse = $_POST['h-captcha-response'] ?? $_POST['g-recaptcha-response'] ?? '';
+
+if(empty($hcaptchaResponse)) {
+    // Log what we received for debugging
+    error_log('hCaptcha missing. POST keys: ' . implode(', ', array_keys($_POST)));
+    fckOff('Please complete the captcha');
+}
+
+// Load secret from config file
+$hcaptchaConfig = require_once 'hcaptcha-config.php';
+$hcaptchaSecret = $hcaptchaConfig['secret'];
+$hcaptchaResponse = $_POST['h-captcha-response'];
+$hcaptchaVerifyUrl = 'https://hcaptcha.com/siteverify';
+
+$hcaptchaData = [
+    'secret' => $hcaptchaSecret,
+    'response' => $hcaptchaResponse,
+    'remoteip' => $_SERVER['REMOTE_ADDR'] ?? ''
+];
+
+$hcaptchaOptions = [
+    'http' => [
+        'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+        'method' => 'POST',
+        'content' => http_build_query($hcaptchaData)
+    ]
+];
+
+$hcaptchaContext = stream_context_create($hcaptchaOptions);
+$hcaptchaResult = @file_get_contents($hcaptchaVerifyUrl, false, $hcaptchaContext);
+
+if($hcaptchaResult === false) {
+    fckOff('Failed to verify captcha. Please try again.');
+}
+
+$hcaptchaJson = json_decode($hcaptchaResult, true);
+
+if(!isset($hcaptchaJson['success']) || $hcaptchaJson['success'] !== true) {
+    fckOff('Captcha verification failed. Please try again.');
+}
+
 if(!isset($_FILES['iconImages']) || !isset($_POST['packName']) || !isset($_POST['packAuthor'])) {
     fckOff('Missing required fields');
 }

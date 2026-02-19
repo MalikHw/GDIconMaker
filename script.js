@@ -765,6 +765,12 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('packName', document.getElementById('packName').value);
         formData.append('packAuthor', document.getElementById('packAuthor').value);
         
+        // Add hCaptcha response
+        const hcaptchaResponse = document.querySelector('[name="h-captcha-response"]');
+        if(hcaptchaResponse && hcaptchaResponse.value) {
+            formData.append('h-captcha-response', hcaptchaResponse.value);
+        }
+        
         submitBt.disabled = true;
         document.querySelector('.btn-text').style.display = 'none';
         document.querySelector('.btn-loading').style.display = 'inline';

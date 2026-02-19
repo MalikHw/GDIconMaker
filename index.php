@@ -26,6 +26,7 @@ $dy = (int)$dt->format('j');
     <link rel="icon" type="image/png" href="pack.png">
     <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://www.hCaptcha.com/1/api.js" async defer></script>
 </head>
 <body data-month="<?php echo $mnth; ?>" data-day="<?php echo $dy; ?>">
     <div class="stats-outside">
@@ -166,6 +167,10 @@ $dy = (int)$dt->format('j');
                     <input type="text" id="packAuthor" name="packAuthor" placeholder="ur name" required>
                 </div>
 
+                <div class="form-group">
+                    <div class="h-captcha" data-sitekey="89f2ecae-ae84-4fd2-bbb0-a80edfe63b90"></div>
+                </div>
+
                 <button type="submit" id="submitBtn" class="submit-btn">
                     <span class="btn-text"><i class="nf nf-fa-magic"></i> generate pack</span>
                     <span class="btn-loading" style="display:none;">
@@ -179,8 +184,8 @@ $dy = (int)$dt->format('j');
             <div id="iconRequestCard" class="icon-request-card" style="display:none;">
                 <div class="icon-request-content">
                     <i class="nf nf-fa-picture_o" style="font-size: 48px; color: var(--accent);"></i>
-                    <h3>need a website icon?</h3>
-                    <p>got a cool idea for an icon but dont have the pic? we can help!</p>
+                    <h3>I need a website icon</h3>
+                    <p>got a cool idea for an icon for this site? You can help!(yes cuz current sucks ass)</p>
                     <a href="#" id="iconRequestBtn" target="_blank" class="icon-request-btn">
                         <i class="nf nf-fa-external_link"></i> request icon
                     </a>
