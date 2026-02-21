@@ -88,7 +88,7 @@ $dy = (int)$dt->format('j');
                         <ol>
                             <li>Go to your Geometry Dash folder (usually at <code>C:\Program Files (x86)\Steam\steamapps\common\Geometry Dash\</code>)</li>
                             <li>Go to the <code>resources</code> folder</li>
-                            <li>Open the ZIP you downloaded earlier and copy the whole <strong>ICONS</strong> folder there!</li>
+                            <li>Open the ZIP you downloaded earlier and copy the whole <strong>ICONS</strong> folder there! (CUBE for High settings is broken btw)</li>
                             <li><em>(if you want your old icon back then do an integrity check on the game)</em></li>
                         </ol>
                     </div>
