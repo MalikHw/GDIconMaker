@@ -11,76 +11,61 @@
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{0,0}</string>
+                <string>{121,120}</string>
                 <key>spriteSourceSize</key>
-                <string>{0,0}</string>
+                <string>{121,120}</string>
                 <key>textureRect</key>
-                <string>{{0,0},{0,0}}</string>
+                <string>{{30,2},{121,120}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
             <key>player_01_2_001.png</key>
             <dict>
                 <key>aliases</key>
-                <array/> [cite: 4]
+                <array/>
                 <key>spriteOffset</key>
-                <string>{0,0}</string> [cite: 4]
+                <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{26,26}</string> [cite: 4]
+                <string>{26,26}</string>
                 <key>spriteSourceSize</key>
-                <string>{26,26}</string> [cite: 5]
+                <string>{26,26}</string>
                 <key>textureRect</key>
-                <string>{{2,2},{26,26}}</string> [cite: 5]
+                <string>{{2,2},{26,26}}</string>
                 <key>textureRotated</key>
-                <false/> [cite: 5]
+                <false/>
             </dict>
             <key>player_01_glow_001.png</key>
-            <dict>
-                <key>aliases</key> [cite: 6]
-                <array/> [cite: 6]
-                <key>spriteOffset</key> [cite: 6]
-                <string>{0,0}</string> [cite: 6]
-                <key>spriteSize</key>
-                <string>{129,128}</string> [cite: 7]
-                <key>spriteSourceSize</key>
-                <string>{129,128}</string> [cite: 7]
-                <key>textureRect</key>
-                <string>{{2,124},{129,128}}</string> [cite: 7]
-                <key>textureRotated</key>
-                <false/> [cite: 8]
-            </dict>
-            <key>player_01_extra_001.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
-                <string>{0,0}</string> [cite: 2]
+                <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{121,120}</string> [cite: 2]
+                <string>{129,128}</string>
                 <key>spriteSourceSize</key>
-                <string>{121,120}</string> [cite: 2]
+                <string>{129,128}</string>
                 <key>textureRect</key>
-                <string>{{30,2},{121,120}}</string> [cite: 3]
+                <string>{{2,124},{129,128}}</string>
                 <key>textureRotated</key>
-                <false/> [cite: 3]
+                <false/>
             </dict>
         </dict>
         <key>metadata</key>
         <dict>
             <key>format</key>
-            <integer>3</integer> [cite: 8]
+            <integer>3</integer>
             <key>pixelFormat</key>
-            <string>RGBA4444</string> [cite: 8]
+            <string>RGBA4444</string>
             <key>premultiplyAlpha</key>
-            <false/> [cite: 9]
+            <false/>
             <key>realTextureFileName</key>
-            <string>icons/player_01-uhd.png</string> [cite: 9]
+            <string>icons/player_01-uhd.png</string>
             <key>size</key>
-            <string>{153,254}</string> [cite: 9]
+            <string>{153,254}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:0f36f6ced31c84a678c7d2507f4e9272:ad62402d7d4d3f4ddfd1b6f03215c99d:c313bd3d4a68642e30fe296757eaba8f$</string> [cite: 9]
+            <string>$TexturePacker:SmartUpdate:0f36f6ced31c84a678c7d2507f4e9272:ad62402d7d4d3f4ddfd1b6f03215c99d:c313bd3d4a68642e30fe296757eaba8f$</string>
             <key>textureFileName</key>
-            <string>icons/player_01-uhd.png</string> [cite: 10]
+            <string>icons/player_01-uhd.png</string>
         </dict>
     </dict>
 </plist>

@@ -50,7 +50,7 @@ $dy = (int)$dt->format('j');
 
         <div class="main-container">
             <h1><img src="head.png" alt="GD Custom Icons Maker" class="logo"></h1>
-            <p class="subtitle">(make ur custom gd icon pack)</p>
+            <p class="subtitle">(make ur custom gd icon pack)(A new issue for High graphics, fixing soon™)</p>
             
             <div class="tutorial-dropdown">
                 <button type="button" class="tutorial-toggle" id="tutorialToggle">
@@ -88,7 +88,7 @@ $dy = (int)$dt->format('j');
                         <ol>
                             <li>Go to your Geometry Dash folder (usually at <code>C:\Program Files (x86)\Steam\steamapps\common\Geometry Dash\</code>)</li>
                             <li>Go to the <code>resources</code> folder</li>
-                            <li>Open the ZIP you downloaded earlier and copy the whole <strong>ICONS</strong> folder there! (CUBE for High settings is broken btw)</li>
+                            <li>Open the ZIP you downloaded earlier and copy the whole <strong>ICONS</strong> folder there! (CUBE for High settings is broken btw, needs to set color to white so it works)</li>
                             <li><em>(if you want your old icon back then do an integrity check on the game)</em></li>
                         </ol>
                     </div>
@@ -185,7 +185,7 @@ $dy = (int)$dt->format('j');
                 <div class="icon-request-content">
                     <i class="nf nf-fa-picture_o" style="font-size: 48px; color: var(--accent);"></i>
                     <h3>I need a website icon</h3>
-                    <p>got a cool idea for an icon for this site? You can help!(yes cuz current sucks ass)</p>
+                    <p>got a cool idea for an icon for this site? You can help!(THIS IS NOT FOR TEXTURE PACK ICONS! DONT USE IT WRONG)</p>
                     <a href="#" id="iconRequestBtn" target="_blank" class="icon-request-btn">
                         <i class="nf nf-fa-external_link"></i> request icon
                     </a>
