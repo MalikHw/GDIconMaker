@@ -45,6 +45,27 @@ body {
     margin: 0;
 }
 
+.milestone-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    color: #000;
+    text-align: center;
+    padding: 15px 20px;
+    font-size: 22px;
+    font-weight: 700;
+    z-index: 99999;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    animation: milestoneSlide 0.5s ease;
+}
+
+@keyframes milestoneSlide {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+}
+
 @media (max-width: 768px) {
     body {
         background-attachment: scroll;
@@ -268,7 +289,7 @@ body {
     border-radius: 12px;
     color: white;
     min-width: 85px;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(5px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
@@ -548,35 +569,6 @@ input[type="file"] {
     cursor: pointer;
 }
 
-.preview-box {
-    margin-top: 20px;
-    padding: 20px;
-    background: var(--bg-light);
-    border: 2px solid var(--primary);
-    border-radius: 10px;
-    text-align: center;
-}
-
-.preview-box p {
-    font-weight: 600;
-    color: var(--primary);
-    margin-bottom: 10px;
-    font-size: 14px;
-}
-
-.preview-note {
-    font-size: 12px !important;
-    color: var(--text-light) !important;
-    font-weight: 400 !important;
-    margin-top: 10px !important;
-}
-
-#previewCanvas {
-    border: 2px solid var(--primary);
-    border-radius: 8px;
-    max-width: 100%;
-}
-
 .image-preview {
     margin-top: 20px;
     text-align: center;
@@ -729,15 +721,12 @@ input[type="file"] {
     user-select: none;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   CROP MODAL
-═══════════════════════════════════════════════════════════ */
 .crop-modal {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
     display: none;
     justify-content: center;
     align-items: center;
@@ -879,9 +868,6 @@ input[type="file"] {
     background: #138496;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   FORM
-═══════════════════════════════════════════════════════════ */
 .form-group {
     margin-bottom: 20px;
 }
@@ -976,9 +962,6 @@ input[type="file"] {
     border: 2px solid #ffeeba;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   FOOTER
-═══════════════════════════════════════════════════════════ */
 .footer {
     margin-top: 40px;
     padding-top: 20px;
@@ -1055,16 +1038,12 @@ input[type="file"] {
     text-decoration: underline;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   MODAL OVERLAY — shared base for ALL modals
-   Uses position:fixed + inset:0 so scrolling NEVER misaligns
-═══════════════════════════════════════════════════════════ */
 .modal-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1081,7 +1060,6 @@ input[type="file"] {
     pointer-events: auto;
 }
 
-/* ─── modal card ─── */
 .modal {
     background: var(--bg-white);
     border-radius: 20px;
@@ -1136,7 +1114,6 @@ input[type="file"] {
     margin-top: 20px;
 }
 
-/* ─── X close button (top-right of modal card) ─── */
 .modal-close-x {
     position: absolute;
     top: 14px;
@@ -1160,7 +1137,6 @@ input[type="file"] {
     background: rgba(231, 76, 60, 0.1);
 }
 
-/* ─── generic modal buttons ─── */
 .modal-btn {
     padding: 15px 30px;
     border: none;
@@ -1211,7 +1187,6 @@ input[type="file"] {
     box-shadow: 0 10px 25px rgba(108, 117, 125, 0.4);
 }
 
-/* ─── share textarea ─── */
 .share-text-box {
     background: var(--bg-light);
     border: 2px solid rgba(0,0,0,0.1);
@@ -1232,9 +1207,6 @@ input[type="file"] {
     outline: none;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   DONATE DROPDOWN (modal variant)
-═══════════════════════════════════════════════════════════ */
 .donate-modal {
     max-width: 420px;
 }
@@ -1247,7 +1219,6 @@ input[type="file"] {
     font-size: 40px;
 }
 
-/* ─── donate option rows ─── */
 .dd-btn-row {
     display: flex;
     flex-direction: column;
@@ -1309,7 +1280,6 @@ input[type="file"] {
     flex-shrink: 0;
 }
 
-/* ─── Ko-fi widget strip ─── */
 .dd-kofi-wrap {
     border-top: 1px solid rgba(128,128,128,0.15);
     padding-top: 16px;
@@ -1317,9 +1287,6 @@ input[type="file"] {
     justify-content: center;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   ICON REQUEST CARD
-═══════════════════════════════════════════════════════════ */
 .icon-request-card {
     margin-top: 30px;
     padding: 30px;
@@ -1360,9 +1327,6 @@ input[type="file"] {
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════════════════════ */
 @media (max-width: 1200px) {
     .main-layout {
         grid-template-columns: 1fr;

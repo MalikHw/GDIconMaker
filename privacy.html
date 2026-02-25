@@ -8,14 +8,6 @@
     <link rel="icon" type="image/png" href="pack.png">
     <link rel="stylesheet" href="style.css">
     <style>
-        body {
-            /* Background changed to bg.png with a dark gray fallback */
-            background: #1a1a1a url('bg.png') repeat;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
         .privacy-container {
             max-width: 800px;
             margin: 0 auto;
@@ -23,31 +15,28 @@
         }
         
         .privacy-content {
-            background: #ffffff;
+            background: var(--bg-white);
             padding: 40px;
             border-radius: 20px;
-            /* Softened shadow for the gray theme */
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
         }
         
         .privacy-content h1 {
-            /* Dark Gray / Charcoal */
-            color: #2d2d2d; 
+            color: var(--text-dark);
             margin-bottom: 10px;
         }
         
         .privacy-content h2 {
-            /* Medium Gray */
-            color: #4a4a4a;
+            color: var(--primary);
             margin-top: 30px;
             margin-bottom: 15px;
             font-size: 1.5em;
-            border-bottom: 2px solid #eeeeee;
+            border-bottom: 2px solid var(--bg-light);
             padding-bottom: 5px;
         }
         
         .privacy-content p, .privacy-content li {
-            color: #333;
+            color: var(--text-dark);
             line-height: 1.8;
             margin-bottom: 15px;
         }
@@ -60,8 +49,7 @@
             display: inline-block;
             margin-top: 20px;
             padding: 12px 24px;
-            /* Gradient changed to Gray tones */
-            background: linear-gradient(135deg, #4a4a4a, #2d2d2d);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             text-decoration: none;
             border-radius: 10px;
@@ -71,29 +59,35 @@
         
         .back-link:hover {
             transform: translateY(-2px);
-            /* Gray shadow on hover */
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(135deg, #5a5a5a, #3d3d3d);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
         }
         
         .highlight {
-            /* Changed from yellow to a neutral light gray callout */
-            background: #f8f9fa;
+            background: var(--bg-light);
             padding: 20px;
-            border-left: 4px solid #4a4a4a;
+            border-left: 4px solid var(--primary);
             border-radius: 5px;
             margin: 20px 0;
-            color: #333;
+            color: var(--text-dark);
         }
 
         a {
-            /* Links styled in a neutral dark gray/blue-gray */
-            color: #4a4a4a;
+            color: var(--accent);
             text-decoration: underline;
         }
 
         a:hover {
-            color: #000;
+            color: var(--primary);
+        }
+        
+        code {
+            background: var(--bg-light);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: var(--primary);
         }
     </style>
 </head>
@@ -167,7 +161,7 @@
                 <li>YouTube: <a href="https://youtube.com/@MalikHw47" target="_blank">@MalikHw47</a></li>
             </ul>
             
-            <a href="index.html" class="back-link">← Back to Icon Maker</a>
+            <a href="index.php" class="back-link">← Back to Icon Maker</a>
         </div>
     </div>
 </body>
