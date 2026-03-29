@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gdiconmaker-v1';
+const CACHE_NAME = 'gdiconmaker-v2';
 
 const CORE_ASSETS = [
   './',
@@ -14,14 +14,12 @@ const CORE_ASSETS = [
   './pack.png',
   './head.png',
   './privacy.html',
-  // Icon templates - HD
   './player_01-hd.png',
   './player_01-uhd.png',
   './dart_01-hd.png',
   './dart_01-uhd.png',
   './player_ball_01-hd.png',
   './player_ball_01-uhd.png',
-  // Plists
   './player_01-hd.plist',
   './player_01-uhd.plist',
   './dart_01-hd.plist',
@@ -39,7 +37,6 @@ const SKIP_DOMAINS = [
   'storage.ko-fi.com',
 ];
 
-// Install: cache all core assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -48,7 +45,6 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate: clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -61,7 +57,6 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// - Skip domains (ads, youtube, etc.)
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (SKIP_DOMAINS.some((d) => url.hostname.includes(d))) {
