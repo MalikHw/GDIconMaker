@@ -1,0 +1,114 @@
+<div class="faq-section" id="faq">
+                <h2 class="faq-heading">FAQ</h2>
+
+                <div class="faq-category">
+                    <h3 class="faq-cat-title">General Site Info</h3>
+
+                    <details class="faq-item">
+                        <summary>What is the primary purpose of this Icon Maker?</summary>
+                        <p>It converts any image you upload into a Geometry Dash icon pack. You pick your picture, choose which gamemodes to generate (cube, wave, ball), give the pack a name, and download a ZIP that drops straight into your GD install. No Photoshop, no manual resizing, no reading wikis about texture atlases at midnight.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Is this tool free to use for the community?</summary>
+                        <p>Yes. No paywalls, no premium tiers, no "basic plan." The source code is on GitHub under GPL-v3. It will stay free. If you want to support the dev there is a donate link in the footer, but that's entirely optional.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Do I need to create an account to save my icon designs?</summary>
+                        <p>No account needed. Everything runs in your browser. Your author name gets saved to localStorage so you don't retype it every session, but there's no login, no email, no database with your data in it.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Is this site affiliated with RobTop Games?</summary>
+                        <p>No. This is a fan-made tool with no official connection to RobTop Games or Geometry Dash. It's a community project. Use it at your own discretion, same as any third-party GD tool.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>How can I report a bug or suggest a new feature?</summary>
+                        <p>Open an issue on the <a href="https://github.com/MalikHw/GDIconMaker/issues" target="_blank">GitHub Issues page</a> for bugs. For feature requests, there's a <a href="https://forms.gle/1gLzxU36EePVKPaB6" target="_blank">Google Form</a> linked in the footer. Discord works too if you want a faster response.</p>
+                    </details>
+                </div>
+
+                <div class="faq-category">
+                    <h3 class="faq-cat-title">Icon Customization & Mechanics</h3>
+
+                    <details class="faq-item">
+                        <summary>Which Geometry Dash versions are currently supported?</summary>
+                        <p>The tool targets GD 2.2 (specifically 2.208). If you're on an older version, the pack structure may not match what the game expects. 2.2081 Geode support depends on when Geode drops an update for that version — check the changelog for current status.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>How do I change the primary and secondary colors of my icon?</summary>
+                        <p>As of the February 15 2026 update, you no longer need to manually set player colors to match your icon. Just install the pack and it handles the colors automatically. If you're on an older build, you'd change them in GD's normal color settings.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Are glow effects and special gradients available?</summary>
+                        <p>The tool processes whatever image you give it. If your source image has a glow or gradient baked in, it'll show up in the exported icons. The tool itself doesn't add effects on top — what you put in is what you get out, scaled and formatted correctly.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Can I preview animations or just static poses?</summary>
+                        <p>Static only for now. The generated pack is a set of still textures. GIF inputs are supported but only the first frame gets used, so you're not getting animated icons in-game from this tool.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Does the tool support 2.2 platformer mode icons and jetpacks?</summary>
+                        <p>Currently the supported gamemodes are cube, wave, and ball. Platformer-specific icons and jetpacks aren't in the generator yet. Check the changelog or the GitHub for updates on that — it's the kind of thing that gets added when someone submits a pull request for it.</p>
+                    </details>
+                </div>
+
+                <div class="faq-category">
+                    <h3 class="faq-cat-title">Exporting & Compatibility</h3>
+
+                    <details class="faq-item">
+                        <summary>In what file formats can I download my finished icons?</summary>
+                        <p>You get a ZIP containing PNG files, structured exactly the way GD expects. You don't need to unpack and repack anything — just use the ZIP as-is.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Can I import these icons directly into my Geometry Dash game files?</summary>
+                        <p>Yes, two ways. The easier one: install Geode, grab the Texture Loader and More Icons mods from the index, then drag the ZIP into <code>Settings &gt; Graphics &gt; Textures</code> the same way Minecraft texture packs work. The manual way: open the ZIP and copy the ICONS folder into your GD resources folder, usually at <code>C:\Program Files (x86)\Steam\steamapps\common\Geometry Dash\resources\</code>. To revert, run a Steam integrity check on the game.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Are the exported images high-resolution (HD) or standard (SD)?</summary>
+                        <p>The tool generates HD and UHD output. The exact resolution scales based on your input image quality, so feeding it a low-res picture will still produce low-res icons — garbage in, garbage out.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Can I use the icons I create here for YouTube or Twitch channel branding?</summary>
+                        <p>The icons you generate are yours to use however you want. The tool itself is GPL-v3, but that license covers the tool's code, not your output images. Use them wherever.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>How do I use the "Copy String" or "Export Code" feature for sharing?</summary>
+                        <p>There's no export code feature in the current version. Sharing is done by handing someone your downloaded ZIP file directly. If you want a specific sharing feature added, drop it in the <a href="https://forms.gle/1gLzxU36EePVKPaB6" target="_blank">feature request form</a>.</p>
+                    </details>
+                </div>
+
+                <div class="faq-category">
+                    <h3 class="faq-cat-title">Technical Troubleshooting</h3>
+
+                    <details class="faq-item">
+                        <summary>Why isn't the icon preview rendering correctly in my browser?</summary>
+                        <p>First thing to try is a hard refresh (Ctrl+Shift+R or Cmd+Shift+R). If the crop canvas looks broken, your browser might be struggling with canvas operations on a large image — try scaling the image down before uploading. If it's consistently broken, open the browser console and check for errors, then report them on GitHub.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Does this tool work on mobile devices and tablets?</summary>
+                        <p>It does, but the crop interface is awkward on smaller screens. The site detects mobile and adjusts the layout. The actual pack generation works fine — it's just the cropping step that's a bit fiddly with touch input.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>How do I clear my cache if the icons are not loading properly?</summary>
+                        <p>In Chrome or Edge: open DevTools (F12), right-click the refresh button, select "Empty Cache and Hard Reload." In Firefox: Ctrl+Shift+Delete, then clear cached web content. If the site has a service worker cached from a previous version, that can also cause stale behavior — you can unregister it from DevTools under Application &gt; Service Workers.</p>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Does the site support custom Texture Packs?</summary>
+                        <p>The output this tool generates <em>is</em> a texture pack, formatted for the Texture Loader mod. You're not applying someone else's pack — you're building your own from an image. If you want to combine this pack with another existing texture pack, you'd need to merge the folders manually, which is outside the scope of this tool.</p>
+                    </details>
+                </div>
+            </div>
