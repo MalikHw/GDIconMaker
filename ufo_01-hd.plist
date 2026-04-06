@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UFOName</key>
+	<string>UFO 01</string>
+	<key>Sprites</key>
+	<array>
+		<string>ufo_01_sprite_1</string>
+		<string>ufo_01_sprite_2</string>
+		<string>ufo_01_sprite_3</string>
+	</array>
+	<key>OtherKeys</key>
+	<dict>
+		<key>SomeKey</key>
+		<string>SomeValue</string>
+	</dict>
+</dict>
+</plist>
