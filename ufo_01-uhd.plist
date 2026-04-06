@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>frames</key>
+    <dict>
+        <key>player_ufo_01_1</key>
+        <dict>
+            <key>frame</key>
+            <dict>
+                <key>x</key>
+                <integer>0</integer>
+                <key>y</key>
+                <integer>0</integer>
+                <key>width</key>
+                <integer>200</integer>
+                <key>height</key>
+                <integer>200</integer>
+            </dict>
+            <key>offset</key>
+            <dict>
+                <key>x</key>
+                <integer>0</integer>
+                <key>y</key>
+                <integer>0</integer>
+            </dict>
+            <key>sourceSize</key>
+            <dict>
+                <key>width</key>
+                <integer>200</integer>
+                <key>height</key>
+                <integer>200</integer>
+            </dict>
+            <key>spriteSize</key>
+            <dict>
+                <key>width</key>
+                <integer>200</integer>
+                <key>height</key>
+                <integer>200</integer>
+            </dict>
+        </dict>
+    </dict>
+</dict>
+</plist>
