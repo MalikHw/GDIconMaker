@@ -109,8 +109,14 @@ function resizeImgToSquare(img, targetSz) {
     
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    
-    ctx.drawImage(img, 0, 0, targetSz, targetSz);
+
+    const scale = Math.min(targetSz / img.width, targetSz / img.height);
+    const sw = img.width * scale;
+    const sh = img.height * scale;
+    const ox = (targetSz - sw) / 2;
+    const oy = (targetSz - sh) / 2;
+
+    ctx.drawImage(img, ox, oy, sw, sh);
     return canv.toDataURL('image/png');
 }
 
